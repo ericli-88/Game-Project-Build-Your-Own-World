@@ -12,13 +12,13 @@ import static utils.RandomUtils.uniform;
 public class World {
 
     //确定 背景板的 尺寸
-    private static final int BACK_HEIGHT = 50;
+    private static final int BACK_HEIGHT = 60;
 
-    private static final int BACK_WIDTH = 50;
+    private static final int BACK_WIDTH = 60;
 
 
 
-    private static final long SEED = 4979293306433157768L;
+    private static final long SEED = 5527594778232254774L;
     private static final Random RANDOM = new Random(SEED);
 
 
@@ -167,7 +167,7 @@ public class World {
          //不断地画room，每多画一个，就和上一个串在一起
 
          //先确定 room的个数: >= 8个
-         int roomNum = uniform(RANDOM,7, 10);
+         int roomNum = uniform(RANDOM,8, 13);
 
          //计算创造几个rooms了
          int count = 0;
@@ -181,11 +181,11 @@ public class World {
 
          //开始loop: 建好几个room
          //若占比小于66%
-         while (/*currSize / totalSize < 0.66*/ /*|| count < roomNum*/ count < roomNum){
+         while (currSize / totalSize < 0.50 /*|| count < roomNum*/ ){
 
              //随机生成这个长方形的size (<= 10)
-             int w = uniform(RANDOM,10,15);
-             int h = uniform(RANDOM,10,15);
+             int w = uniform(RANDOM,9,15);
+             int h = uniform(RANDOM,9,15);
 
              //随机生成这个长方形的中心
              int centerX = RANDOM.nextInt(BACK_WIDTH);
@@ -200,8 +200,8 @@ public class World {
                  //Redo
 
                  //随机生成这个长方形的size (<= 10)
-                 w = uniform(RANDOM,10, 15);
-                 h = uniform(RANDOM,10, 15);
+                 w = uniform(RANDOM,9, 15);
+                 h = uniform(RANDOM,9, 15);
 
                  //随机生成这个长方形的中心
                  centerX = RANDOM.nextInt(BACK_WIDTH);
