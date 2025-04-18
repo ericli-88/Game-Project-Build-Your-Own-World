@@ -14,7 +14,7 @@ public class World {
     //确定 背景板的 尺寸
     private static final int BACK_HEIGHT = 60;
 
-    private static final int BACK_WIDTH = 60;
+    private static final int BACK_WIDTH = 70;
 
 
 
@@ -104,7 +104,7 @@ public class World {
             //若重叠 也不行
             for (int i = cX - w/2; i < cX + w/2; i++){
                 for (int j = cY - h/2; j < cY + h/2; j++){
-                    if (world[i][j].equals(Tileset.FLOOR) || world[i][j].equals(Tileset.WALL)){
+                    if (!world[i][j].equals(Tileset.NOTHING)){
                         return false;
                     }
                 }
@@ -157,8 +157,8 @@ public class World {
          TETile[][] world = new TETile[BACK_WIDTH][BACK_HEIGHT];
 
          //先用Nothing打底
-         for (int x = 0; x < BACK_HEIGHT; x++) {
-             for (int y = 0; y < BACK_HEIGHT; y++) {
+         for (int x = 0; x < world.length; x++) {
+             for (int y = 0; y < world[0].length; y++) {
                  //world[x][y] = Tileset.NOTHING;
                  world[x][y] = Tileset.NOTHING;
              }
@@ -184,8 +184,8 @@ public class World {
          while (currSize / totalSize < 0.50 /*|| count < roomNum*/ ){
 
              //随机生成这个长方形的size (<= 10)
-             int w = uniform(RANDOM,9,15);
-             int h = uniform(RANDOM,9,15);
+             int w = uniform(RANDOM,13,18);
+             int h = uniform(RANDOM,13,18);
 
              //随机生成这个长方形的中心
              int centerX = RANDOM.nextInt(BACK_WIDTH);
@@ -200,8 +200,8 @@ public class World {
                  //Redo
 
                  //随机生成这个长方形的size (<= 10)
-                 w = uniform(RANDOM,9, 15);
-                 h = uniform(RANDOM,9, 15);
+                 w = uniform(RANDOM,13, 19);
+                 h = uniform(RANDOM,13, 19);
 
                  //随机生成这个长方形的中心
                  centerX = RANDOM.nextInt(BACK_WIDTH);
@@ -361,7 +361,7 @@ public class World {
     public void moveX (TETile[][] world, int startX, int endX, int startY, char a){
         if (a == '+'){
             for (int i = startX; i <= endX; i++){
-                if (world[endX][i] ==  Tileset.NOTHING){
+                if (world[i][startY] ==  Tileset.NOTHING){
                     currSize ++;
                 }
                 world[i][startY] = Tileset.FLOOR;
@@ -381,7 +381,7 @@ public class World {
 
         } else {
             for (int i = startX; i >= endX; i--){
-                if (world[endX][i] ==  Tileset.NOTHING){
+                if (world[i][startY] ==  Tileset.NOTHING){
                     currSize ++;
                 }
                 world[i][startY] = Tileset.FLOOR;
