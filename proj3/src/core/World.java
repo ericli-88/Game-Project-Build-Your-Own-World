@@ -14,11 +14,12 @@ public class World {
     //确定 背景板的 尺寸
     private static final int BACK_HEIGHT = 60;
 
-    private static final int BACK_WIDTH = 70;
+    private static final int BACK_WIDTH = 60;
 
 
 
     private static final long SEED = 5527594778232254774L;
+    //private static final long SEED = System.currentTimeMillis();
     private static final Random RANDOM = new Random(SEED);
 
 
@@ -167,7 +168,7 @@ public class World {
          //不断地画room，每多画一个，就和上一个串在一起
 
          //先确定 room的个数: >= 8个
-         int roomNum = uniform(RANDOM,8, 13);
+         int roomNum = uniform(RANDOM,7, 13);
 
          //计算创造几个rooms了
          int count = 0;
@@ -184,8 +185,8 @@ public class World {
          while (currSize / totalSize < 0.50 /*|| count < roomNum*/ ){
 
              //随机生成这个长方形的size (<= 10)
-             int w = uniform(RANDOM,13,18);
-             int h = uniform(RANDOM,13,18);
+             int w = uniform(RANDOM,10,18);
+             int h = uniform(RANDOM,10,18);
 
              //随机生成这个长方形的中心
              int centerX = RANDOM.nextInt(BACK_WIDTH);
@@ -200,8 +201,8 @@ public class World {
                  //Redo
 
                  //随机生成这个长方形的size (<= 10)
-                 w = uniform(RANDOM,13, 19);
-                 h = uniform(RANDOM,13, 19);
+                 w = uniform(RANDOM,10, 18);
+                 h = uniform(RANDOM,10, 18);
 
                  //随机生成这个长方形的中心
                  centerX = RANDOM.nextInt(BACK_WIDTH);
@@ -229,9 +230,27 @@ public class World {
 
              } else {
                  //更新 上一个 center的坐标
-                 precenterX = centerX;
-                 precenterY = centerY;
+                 precenterX = centerX ;
+                 precenterY = centerY ;
              }
+
+
+
+//             if (precenterX != -1){
+//
+//                 //连接
+//                 connectR(world,precenterX,precenterY,centerX,centerY);
+//                 //更新 上一个 center的坐标
+//                 precenterX = uniform(RANDOM, centerX - w/4, centerX + w/4);
+//                 precenterY = uniform(RANDOM, centerY - h/4, centerY + h/4);
+//
+//             } else {
+//                 //更新 上一个 center的坐标
+//                 precenterX = uniform(RANDOM, centerX - w/4, centerX + w/4);
+//                 precenterY = uniform(RANDOM, centerY - h/4, centerY + h/4);
+//             }
+
+
 
              count ++;
 
@@ -402,6 +421,9 @@ public class World {
 
 
     }
+
+
+
 
 
     //竖着走
