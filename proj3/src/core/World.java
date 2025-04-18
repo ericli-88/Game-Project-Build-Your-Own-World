@@ -11,17 +11,20 @@ import static utils.RandomUtils.uniform;
 
 public class World {
 
-    //确定 背景板的 尺寸
-    private static final int BACK_HEIGHT = 60;
+//    //确定 背景板的 尺寸
+//    private static final int BACK_HEIGHT = 60;
+//
+//    private static final int BACK_WIDTH = 60;
 
-    private static final int BACK_WIDTH = 60;
 
 
-
-    private static final long SEED = 5527594778232254774L;
+    //private static final long SEED = 5527594778232254774L;
     //private static final long SEED = System.currentTimeMillis();
-    private static final Random RANDOM = new Random(SEED);
-
+    private long SEED;
+    private Random RANDOM;
+    private int BACK_WIDTH;
+    private int BACK_HEIGHT;
+    private TERenderer ter;
 
     //总尺寸，用于计算 占比
     double totalSize;
@@ -29,9 +32,16 @@ public class World {
     //当前尺寸
     double currSize;
 
-    World (){
+    World (long seed,int B_H, int B_W, TERenderer t){
+        ter = t;
+        BACK_WIDTH = B_W;
+        BACK_HEIGHT = B_H;
         currSize = 0;
         totalSize = 1.0* BACK_HEIGHT* BACK_WIDTH;
+        SEED = seed;
+        RANDOM = new Random(SEED);
+
+        //RANDOM = new Random(4979293306433157768L);
     }
     /**************************************************************************************************************/
     //第一个nested class： room
@@ -150,10 +160,12 @@ public class World {
 
     //创自己的世界（总的func）
      public void createWorld (){
-         TERenderer ter = new TERenderer();
-         ter.initialize(BACK_WIDTH,BACK_HEIGHT);
+//         TERenderer ter = new TERenderer();
+//         ter.initialize(BACK_WIDTH,BACK_HEIGHT);
 
          //创自己的世界
+         //先display吃到的Seed
+         System.out.println(SEED);
 
          TETile[][] world = new TETile[BACK_WIDTH][BACK_HEIGHT];
 
@@ -233,22 +245,6 @@ public class World {
                  precenterX = centerX ;
                  precenterY = centerY ;
              }
-
-
-
-//             if (precenterX != -1){
-//
-//                 //连接
-//                 connectR(world,precenterX,precenterY,centerX,centerY);
-//                 //更新 上一个 center的坐标
-//                 precenterX = uniform(RANDOM, centerX - w/4, centerX + w/4);
-//                 precenterY = uniform(RANDOM, centerY - h/4, centerY + h/4);
-//
-//             } else {
-//                 //更新 上一个 center的坐标
-//                 precenterX = uniform(RANDOM, centerX - w/4, centerX + w/4);
-//                 precenterY = uniform(RANDOM, centerY - h/4, centerY + h/4);
-//             }
 
 
 
