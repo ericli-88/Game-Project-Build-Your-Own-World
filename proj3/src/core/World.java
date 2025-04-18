@@ -1,9 +1,11 @@
 package core;
 
+import edu.princeton.cs.algs4.StdDraw;
 import tileengine.TERenderer;
 import tileengine.TETile;
 import tileengine.Tileset;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -25,6 +27,7 @@ public class World {
     private int BACK_WIDTH;
     private int BACK_HEIGHT;
     private TERenderer ter;
+    TETile[][] world /*= new TETile[BACK_WIDTH][BACK_HEIGHT]*/;
 
     //总尺寸，用于计算 占比
     double totalSize;
@@ -159,6 +162,7 @@ public class World {
 
 
     //创自己的世界（总的func）
+    //并存在world instance variable里
      public void createWorld (){
 //         TERenderer ter = new TERenderer();
 //         ter.initialize(BACK_WIDTH,BACK_HEIGHT);
@@ -167,7 +171,7 @@ public class World {
          //先display吃到的Seed
          System.out.println(SEED);
 
-         TETile[][] world = new TETile[BACK_WIDTH][BACK_HEIGHT];
+         /*TETile[][] */world = new TETile[BACK_WIDTH][BACK_HEIGHT];
 
          //先用Nothing打底
          for (int x = 0; x < world.length; x++) {
@@ -372,7 +376,7 @@ public class World {
     }
 
 
-    //横着走
+    //连接x
     public void moveX (TETile[][] world, int startX, int endX, int startY, char a){
         if (a == '+'){
             for (int i = startX; i <= endX; i++){
@@ -422,7 +426,7 @@ public class World {
 
 
 
-    //竖着走
+    //连接y
     public void moveY (TETile[][] world, int startY, int endY, int endX, char a){
 
         if (a == '+'){
@@ -470,6 +474,125 @@ public class World {
 
     }
     /**************************************************************************************************************/
+
+
+
+
+
+
+
+    /**************************************************************************************************************/
+    //开始游戏
+    public void play(){
+
+        //先生成 玩家的 出生点
+        int X = uniform(RANDOM,0, BACK_WIDTH);
+        int Y = uniform(RANDOM,0, BACK_HEIGHT);
+
+        //如果不是floor，重新生成
+        while (!world[X][Y].equals(Tileset.FLOOR)){
+            X = uniform(RANDOM,0, BACK_WIDTH);
+            Y = uniform(RANDOM,0, BACK_HEIGHT);
+        }
+
+        //设置形状
+        TETile you = new TETile('@', Color.YELLOW,Color.BLACK,"You",1);
+        world[X][Y] = you;
+
+        //开始设置移动
+        //接下来的鼠标之类的 也都会在这里面
+        char direction;
+
+        while (true){
+
+            //移动
+            while (StdDraw.hasNextKeyTyped()){
+
+                //读取+小写
+                direction = Character.toLowerCase(StdDraw.nextKeyTyped());
+
+                //每移动一次，更新X,Y+原位置变回floor+新位置是you
+                switch(direction){
+
+                    //向上
+                    case 'w':
+                        //是floor && 不超出背景板
+                        if (world[X][Y+1].equals(Tileset.FLOOR) && Y >= 0 && Y < BACK_HEIGHT){
+                            //目标点变成@
+                            world[X][Y+1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y ++;
+
+                        }
+                        break;
+
+                    //向下
+                    case 's':
+                        //是floor && 不超出背景板
+                        if (world[X][Y-1].equals(Tileset.FLOOR) && Y >= 0 && Y < BACK_HEIGHT){
+                            //目标点变成@
+                            world[X][Y-1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y --;
+
+                        }
+                        break;
+
+                    //向左
+                    case 'a':
+                        //是floor && 不超出背景板
+                        if (world[X-1][Y].equals(Tileset.FLOOR) && X >= 0 && X < BACK_WIDTH){
+                            //目标点变成@
+                            world[X-1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X --;
+
+                        }
+                        break;
+
+                    //向右
+                    case 'd':
+                        //是floor && 不超出背景板
+                        if (world[X+1][Y].equals(Tileset.FLOOR) && X >= 0 && X < BACK_WIDTH){
+                            //目标点变成@
+                            world[X+1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X ++;
+
+                        }
+                        break;
+
+                    default:
+                        break;
+
+                }
+
+            }
+            ter.renderFrame(world);
+
+
+
+        }
+
+
+
+
+    }
+
+
+
+
+
+
+
 
 
 

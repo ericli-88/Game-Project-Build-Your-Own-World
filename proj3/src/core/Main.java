@@ -66,6 +66,7 @@ public class Main {
                         //创一个世界
                         World x = new World(finalSeed,BACK_HEIGHT,BACK_WIDTH,ter);
                         x.createWorld ();
+                        x.play();
                         break;
 
 
