@@ -17,16 +17,16 @@ import static utils.RandomUtils.uniform;
 public class Main {
 
     //确定 背景板的 尺寸
-    private static final int BACK_HEIGHT = 60;
+    private static final int BACK_HEIGHT = 58;
 
-    private static final int BACK_WIDTH = 60;
+    private static final int BACK_WIDTH = 78;
 
     TERenderer ter;
 
 
     public static void main(String[] args) {
         TERenderer ter = new TERenderer();
-        ter.initialize(BACK_WIDTH,BACK_HEIGHT);
+        ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
         //向用户展示menu
         menu();
         char c;
@@ -62,7 +62,7 @@ public class Main {
                         long finalSeed = SEEDmenu();
                         //先创建一个背景板
                         //TERenderer ter = new TERenderer();
-                        ter.initialize(BACK_WIDTH,BACK_HEIGHT);
+                        ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
                         //创一个世界
                         World x = new World(finalSeed,BACK_HEIGHT,BACK_WIDTH,ter);
                         x.createWorld ();
@@ -108,16 +108,16 @@ public class Main {
         //使用上述字体
         StdDraw.setFont(CS61B);
         //输出文字
-        StdDraw.textLeft(19, 47, "CS61B: BYOW");
+        StdDraw.textLeft(25, 47, "CS61B: BYOW");
 
         //设置后面几行的字体+大小
         Font option= new Font ("default", 0, 35);
         //使用上述字体
         StdDraw.setFont(option);
         //输出文字
-        StdDraw.textLeft(23, 36, "(N) New Game");
-        StdDraw.textLeft(23, 30, "(L) Load Game");
-        StdDraw.textLeft(23, 24, "(Q) Quit Game");
+        StdDraw.textLeft(29, 36, "(N) New Game");
+        StdDraw.textLeft(29, 30, "(L) Load Game");
+        StdDraw.textLeft(29, 24, "(Q) Quit Game");
 
         //Display
         StdDraw.show();
@@ -166,8 +166,13 @@ public class Main {
                 //如果不是，那就k按是不是S，如果也不是，就当没发生过，吃下一个
                 else{
                     if (Character.toLowerCase(c) == 's'){
-                        //把最新的种子输出出去
-                        return Long.parseLong(finalSeed);
+
+                        //若Stiring非空
+                        if(!finalSeed.equals("")){
+                            //把最新的种子输出出去
+                            return Long.parseLong(finalSeed);
+                        }
+
                     }
                     break;
 
@@ -183,22 +188,27 @@ public class Main {
             //使用上述字体
             StdDraw.setFont(CS61B);
             //输出文字
-            StdDraw.textLeft(19, 47, "CS61B: BYOW");
+            StdDraw.textLeft(25, 47, "CS61B: BYOW");
 
             //设置后面几行的字体+大小
             Font option= new Font ("default", 0, 45);
             //使用上述字体
             StdDraw.setFont(option);
             //输出Prompt文字
-            StdDraw.textLeft(10, 35, "Enter     seed     followed     by     S:");
+            StdDraw.textLeft(16, 35, "Enter     seed     followed     by     S:");
 
             //输出现有seed
             //设置新颜色
             StdDraw.setPenColor(YELLOW);
-            StdDraw.textLeft(10, 25, finalSeed);
+            if (!finalSeed.equals("")){
+                StdDraw.textLeft(16, 25, finalSeed);
+            }
+
 
             //Display
             StdDraw.show();
+            //避免闪烁
+            StdDraw.pause(2);
 
 
 
