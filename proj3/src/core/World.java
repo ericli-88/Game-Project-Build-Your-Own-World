@@ -1,5 +1,7 @@
 package core;
 
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Out;
 import edu.princeton.cs.algs4.StdDraw;
 import tileengine.TERenderer;
 import tileengine.TETile;
@@ -20,7 +22,6 @@ public class World {
 //    private static final int BACK_WIDTH = 60;
 
 
-
     //private static final long SEED = 5527594778232254774L;
     //private static final long SEED = System.currentTimeMillis();
     private long SEED;
@@ -29,6 +30,7 @@ public class World {
     private int BACK_HEIGHT;
     private TERenderer ter;
     TETile[][] world /*= new TETile[BACK_WIDTH][BACK_HEIGHT]*/;
+    Out saveTXT;
 
     //总尺寸，用于计算 占比
     double totalSize;
@@ -36,20 +38,32 @@ public class World {
     //当前尺寸
     double currSize;
 
-    World (long seed,int B_H, int B_W, TERenderer t){
+    World(long seed, int B_H, int B_W, TERenderer t, Out file) {
         ter = t;
         BACK_WIDTH = B_W;
         BACK_HEIGHT = B_H;
         currSize = 0;
-        totalSize = 1.0* BACK_HEIGHT* BACK_WIDTH;
+        totalSize = 1.0 * BACK_HEIGHT * BACK_WIDTH;
         SEED = seed;
         RANDOM = new Random(SEED);
 
+        saveTXT = file;
+
+        world = new TETile[BACK_WIDTH][BACK_HEIGHT];
+        //先用Nothing打底
+        for (int x = 0; x < world.length; x++) {
+            for (int y = 0; y < world[0].length; y++) {
+                //world[x][y] = Tileset.NOTHING;
+                world[x][y] = Tileset.NOTHING;
+            }
+        }
+
         //RANDOM = new Random(4979293306433157768L);
     }
+
     /**************************************************************************************************************/
     //第一个nested class： room
-    private class Room{
+    private class Room {
 
         //宽
         private int w;
@@ -62,7 +76,7 @@ public class World {
 
 
         //Constructor
-        Room(int a, int b, int c, int d){
+        Room(int a, int b, int c, int d) {
             //宽
             w = a;
             //长
@@ -75,12 +89,12 @@ public class World {
 
         /**************************************************************************************************************/
         //第一个method： 建立room
-        public void add1Room (TETile[][] world){
+        public void add1Room(TETile[][] world) {
 
             //开始画Room
-            for (int i = centerX - w/2; i < centerX + w/2; i++){
-                for (int j = centerY - h/2; j < centerY + h/2; j++){
-                    if (i == centerX - w/2 || i == centerX + w/2 - 1 || j == centerY - h/2 || j == centerY + h/2 - 1){
+            for (int i = centerX - w / 2; i < centerX + w / 2; i++) {
+                for (int j = centerY - h / 2; j < centerY + h / 2; j++) {
+                    if (i == centerX - w / 2 || i == centerX + w / 2 - 1 || j == centerY - h / 2 || j == centerY + h / 2 - 1) {
                         world[i][j] = Tileset.WALL;
                     } else {
                         world[i][j] = Tileset.FLOOR;
@@ -95,13 +109,13 @@ public class World {
 
         /**************************************************************************************************************/
         //第二个method，确认能不能生成一个room
-        public boolean validRoom (TETile[][] world, int w, int h, int cX, int cY){
+        public boolean validRoom(TETile[][] world, int w, int h, int cX, int cY) {
 
             //确定这次的起始点
             //一定要确保生成的地方不是 地板或是墙; 也不是边界
             //但凡 有一项符合 直接 false
             if (world[cX][cY].equals(Tileset.FLOOR) || world[cX][cY].equals(Tileset.WALL)
-                    || cX == 0 || cX == BACK_WIDTH - 1  || cY == 0 || cY == BACK_HEIGHT - 1){
+                    || cX == 0 || cX == BACK_WIDTH - 1 || cY == 0 || cY == BACK_HEIGHT - 1) {
                 return false;
             }
 
@@ -109,17 +123,17 @@ public class World {
             //若重叠 也不行
 
             //确保 size 不会抄出板
-            if(cX - w/2 < 0 || cX + w/2 >= BACK_WIDTH ||
-               cY - h/2 < 0 || cY + h/2 >= BACK_HEIGHT){
+            if (cX - w / 2 < 0 || cX + w / 2 >= BACK_WIDTH ||
+                    cY - h / 2 < 0 || cY + h / 2 >= BACK_HEIGHT) {
 
                 return false;
             }
 
             //最后 check 这个 room会不会和其他房间重叠
             //若重叠 也不行
-            for (int i = cX - w/2; i < cX + w/2; i++){
-                for (int j = cY - h/2; j < cY + h/2; j++){
-                    if (!world[i][j].equals(Tileset.NOTHING)){
+            for (int i = cX - w / 2; i < cX + w / 2; i++) {
+                for (int j = cY - h / 2; j < cY + h / 2; j++) {
+                    if (!world[i][j].equals(Tileset.NOTHING)) {
                         return false;
                     }
                 }
@@ -131,11 +145,10 @@ public class World {
         /**************************************************************************************************************/
 
 
-
         /**************************************************************************************************************/
         //Method 3
         //更新 room的参数
-        public void updateR (int a, int b, int c, int d){
+        public void updateR(int a, int b, int c, int d) {
             //宽
             w = a;
             //长
@@ -148,161 +161,149 @@ public class World {
         /**************************************************************************************************************/
 
 
-
-
-
-
-
     }
+
     /**************************************************************************************************************/
-
-
-
-
-
 
 
     //创自己的世界（总的func）
     //并存在world instance variable里
-     public void createWorld (){
+    public void createWorld() {
 //         TERenderer ter = new TERenderer();
 //         ter.initialize(BACK_WIDTH,BACK_HEIGHT);
 
-         //创自己的世界
-         //先display吃到的Seed
-         //System.out.println(SEED);
+        //创自己的世界
+        //先display吃到的Seed
+        //System.out.println(SEED);
 
-         System.out.println(SEED);
-         /*TETile[][] */world = new TETile[BACK_WIDTH][BACK_HEIGHT];
+        System.out.println(SEED);
+        /*TETile[][] */
+        //world = new TETile[BACK_WIDTH][BACK_HEIGHT];
 
-         //先用Nothing打底
-         for (int x = 0; x < world.length; x++) {
-             for (int y = 0; y < world[0].length; y++) {
-                 //world[x][y] = Tileset.NOTHING;
-                 world[x][y] = Tileset.NOTHING;
-             }
-         }
-         //画背景板
-         //不断地画room，每多画一个，就和上一个串在一起
+//         //先用Nothing打底
+//         for (int x = 0; x < world.length; x++) {
+//             for (int y = 0; y < world[0].length; y++) {
+//                 //world[x][y] = Tileset.NOTHING;
+//                 world[x][y] = Tileset.NOTHING;
+//             }
+//         }
+        //画背景板
+        //不断地画room，每多画一个，就和上一个串在一起
 
-         //先确定 room的个数: >= 8个
-         int roomNum = uniform(RANDOM,7, 13);
+        //先确定 room的个数: >= 8个
+        int roomNum = uniform(RANDOM, 7, 13);
 
-         //计算创造几个rooms了
-         int count = 0;
-
-
-         //记录所有中心的位置
-         int precenterX = -1;
-         int precenterY = -1;
+        //计算创造几个rooms了
+        int count = 0;
 
 
-
-         //开始loop: 建好几个room
-         //若占比小于66%
-         while (currSize / totalSize < 0.50 /*|| count < roomNum*/ ){
-
-             //随机生成这个长方形的size (<= 10)
-             int w = uniform(RANDOM,15,30);
-             int h = uniform(RANDOM,10,20);
-
-             //随机生成这个长方形的中心
-             int centerX = RANDOM.nextInt(BACK_WIDTH);
-             int centerY = RANDOM.nextInt(BACK_HEIGHT);
-
-             //declare一个Room Variable
-             Room room = new Room(w,h,centerX,centerY);
-
-             //找到Valid的size 和 center
-             while (! room.validRoom(world, w, h, centerX, centerY)){
-
-                 //Redo
-
-                 //随机生成这个长方形的size (<= 10)
-                 w = uniform(RANDOM,10, 18);
-                 h = uniform(RANDOM,10, 18);
-
-                 //随机生成这个长方形的中心
-                 centerX = RANDOM.nextInt(BACK_WIDTH);
-                 centerY = RANDOM.nextInt(BACK_HEIGHT);
-             }
-
-             //更新room的参数
-             room.updateR(w,h,centerX,centerY);
-
-             //更新 墙和地板的数量
-             currSize += 1.0 * w * h;
-
-             //画 Room
-             room.add1Room(world);
-
-             //和上一个连接
-
-             if (precenterX != -1){
-
-                 //连接
-                 connectR(world,precenterX,precenterY,centerX,centerY);
-                 //更新 上一个 center的坐标
-                 precenterX = centerX;
-                 precenterY = centerY;
-
-             } else {
-                 //更新 上一个 center的坐标
-                 precenterX = centerX ;
-                 precenterY = centerY ;
-             }
+        //记录所有中心的位置
+        int precenterX = -1;
+        int precenterY = -1;
 
 
+        //开始loop: 建好几个room
+        //若占比小于66%
+        while (currSize / totalSize < 0.50 /*|| count < roomNum*/) {
 
-             count ++;
+            //随机生成这个长方形的size (<= 10)
+            int w = uniform(RANDOM, 15, 30);
+            int h = uniform(RANDOM, 10, 20);
 
-         }
+            //随机生成这个长方形的中心
+            int centerX = RANDOM.nextInt(BACK_WIDTH);
+            int centerY = RANDOM.nextInt(BACK_HEIGHT);
+
+            //declare一个Room Variable
+            Room room = new Room(w, h, centerX, centerY);
+
+            //找到Valid的size 和 center
+            while (!room.validRoom(world, w, h, centerX, centerY)) {
+
+                //Redo
+
+                //随机生成这个长方形的size (<= 10)
+                w = uniform(RANDOM, 10, 18);
+                h = uniform(RANDOM, 10, 18);
+
+                //随机生成这个长方形的中心
+                centerX = RANDOM.nextInt(BACK_WIDTH);
+                centerY = RANDOM.nextInt(BACK_HEIGHT);
+            }
+
+            //更新room的参数
+            room.updateR(w, h, centerX, centerY);
+
+            //更新 墙和地板的数量
+            currSize += 1.0 * w * h;
+
+            //画 Room
+            room.add1Room(world);
+
+            //和上一个连接
+
+            if (precenterX != -1) {
+
+                //连接
+                connectR(world, precenterX, precenterY, centerX, centerY);
+                //更新 上一个 center的坐标
+                precenterX = centerX;
+                precenterY = centerY;
+
+            } else {
+                //更新 上一个 center的坐标
+                precenterX = centerX;
+                precenterY = centerY;
+            }
 
 
+            count++;
 
-         System.out.println(currSize / totalSize*100);
-         System.out.println("Count: " + count);
-         ter.renderFrame(world);
-     }
+        }
+
+
+        System.out.println(currSize / totalSize * 100);
+        System.out.println("Count: " + count);
+        ter.renderFrame(world);
+    }
     /**************************************************************************************************************/
-
 
 
     /**************************************************************************************************************/
     //World's Method 2
     //连接Room
-    public void connectR (TETile[][] world, int cx1, int cy1, int cx2, int cy2){
+    public void connectR(TETile[][] world, int cx1, int cy1, int cx2, int cy2) {
         //选择先横着走，还是竖着走
         int xORy = RANDOM.nextInt(2);
 
         //若为0， 先横 后竖
-        if (xORy == 0){
+        if (xORy == 0) {
             //先横
             //永远都是 x1 到 x2
-            if (cx1 > cx2){
+            if (cx1 > cx2) {
 
                 char how = '-';
-                moveX(world,cx1, cx2, cy1, how);
+                moveX(world, cx1, cx2, cy1, how);
 
                 //开始调整y
-                if (cy1 > cy2){
+                if (cy1 > cy2) {
                     how = '-';
                     moveY(world, cy1, cy2, cx2, how);
-                } else if (cy1 < cy2){
+                } else if (cy1 < cy2) {
                     how = '+';
                     moveY(world, cy1, cy2, cx2, how);
                 } //若y已经相等，那就没必要动了
 
-            } else if (cx1 < cx2){
+            } else if (cx1 < cx2) {
 
                 char how = '+';
-                moveX(world,cx1, cx2, cy1, how);
+                moveX(world, cx1, cx2, cy1, how);
 
                 //开始调整y
-                if (cy1 > cy2){
+                if (cy1 > cy2) {
                     how = '-';
                     moveY(world, cy1, cy2, cx2, how);
-                } else if (cy1 < cy2){
+                } else if (cy1 < cy2) {
                     how = '+';
                     moveY(world, cy1, cy2, cx2, how);
                 } //若y已经相等，那就没必要动了
@@ -311,67 +312,61 @@ public class World {
                 //直接做y
                 char how;
                 //开始调整y
-                if (cy1 > cy2){
+                if (cy1 > cy2) {
                     how = '-';
                     moveY(world, cy1, cy2, cx2, how);
-                } else if (cy1 < cy2){
+                } else if (cy1 < cy2) {
                     how = '+';
                     moveY(world, cy1, cy2, cx2, how);
                 } //若y已经相等，那就没必要动了
             }
-
-
 
 
         } else {
             /*************************************/
             //先竖
             //永远都是y1 到 y2
-            if (cy1 > cy2){
+            if (cy1 > cy2) {
                 char how = '-';
                 moveY(world, cy1, cy2, cx1, how);
 
                 //开始调整x
-                if (cx1 > cx2){
+                if (cx1 > cx2) {
                     how = '-';
-                    moveX(world,cx1, cx2, cy2, how);
-                } else if (cx1 < cx2){
+                    moveX(world, cx1, cx2, cy2, how);
+                } else if (cx1 < cx2) {
                     how = '+';
-                    moveX(world,cx1, cx2, cy2, how);
+                    moveX(world, cx1, cx2, cy2, how);
                 } //若y已经相等，那就没必要动了
 
 
-            } else if (cy1 < cy2){
+            } else if (cy1 < cy2) {
 
                 char how = '+';
                 moveY(world, cy1, cy2, cx1, how);
 
                 //开始调整x
-                if (cx1 > cx2){
+                if (cx1 > cx2) {
                     how = '-';
-                    moveX(world,cx1, cx2, cy2, how);
-                } else if (cx1 < cx2){
+                    moveX(world, cx1, cx2, cy2, how);
+                } else if (cx1 < cx2) {
                     how = '+';
-                    moveX(world,cx1, cx2, cy2, how);
+                    moveX(world, cx1, cx2, cy2, how);
                 } //若x已经相等，那就没必要动了
-
-
 
 
             } else {
 
                 char how;
                 //开始调整x
-                if (cx1 > cx2){
+                if (cx1 > cx2) {
                     how = '-';
-                    moveX(world,cx1, cx2, cy2, how);
-                } else if (cy1 < cy2){
+                    moveX(world, cx1, cx2, cy2, how);
+                } else if (cy1 < cy2) {
                     how = '+';
-                    moveX(world,cx1, cx2, cy2, how);
+                    moveX(world, cx1, cx2, cy2, how);
                 } //若x已经相等，那就没必要动了
             }
-
-
 
 
         }
@@ -379,92 +374,91 @@ public class World {
 
 
     //连接x
-    public void moveX (TETile[][] world, int startX, int endX, int startY, char a){
-        if (a == '+'){
-            for (int i = startX; i <= endX; i++){
-                if (world[i][startY] ==  Tileset.NOTHING){
-                    currSize ++;
+    public void moveX(TETile[][] world, int startX, int endX, int startY, char a) {
+        if (a == '+') {
+            for (int i = startX; i <= endX; i++) {
+                if (world[i][startY] == Tileset.NOTHING) {
+                    currSize++;
                 }
                 world[i][startY] = Tileset.FLOOR;
 
-                if (world[i][startY - 1] == Tileset.NOTHING){
+                if (world[i][startY - 1] == Tileset.NOTHING) {
                     world[i][startY - 1] = Tileset.WALL;
-                    currSize ++;
+                    currSize++;
                 }
 
-                if (world[i][startY + 1] == Tileset.NOTHING){
+                if (world[i][startY + 1] == Tileset.NOTHING) {
                     world[i][startY + 1] = Tileset.WALL;
-                    currSize ++;
+                    currSize++;
                 }
 
             }
 
 
         } else {
-            for (int i = startX; i >= endX; i--){
-                if (world[i][startY] ==  Tileset.NOTHING){
-                    currSize ++;
+            for (int i = startX; i >= endX; i--) {
+                if (world[i][startY] == Tileset.NOTHING) {
+                    currSize++;
                 }
                 world[i][startY] = Tileset.FLOOR;
 
-                if (world[i][startY - 1] == Tileset.NOTHING){
+                if (world[i][startY - 1] == Tileset.NOTHING) {
                     world[i][startY - 1] = Tileset.WALL;
-                    currSize ++;
+                    currSize++;
                 }
 
-                if (world[i][startY + 1] == Tileset.NOTHING){
+                if (world[i][startY + 1] == Tileset.NOTHING) {
                     world[i][startY + 1] = Tileset.WALL;
-                    currSize ++;
+                    currSize++;
                 }
 
             }
         }
 
 
-
     }
 
 
     //连接y
-    public void moveY (TETile[][] world, int startY, int endY, int endX, char a){
+    public void moveY(TETile[][] world, int startY, int endY, int endX, char a) {
 
-        if (a == '+'){
-            for (int i = startY; i <= endY; i++){
+        if (a == '+') {
+            for (int i = startY; i <= endY; i++) {
 
-                if (world[endX][i] ==  Tileset.NOTHING){
-                    currSize ++;
+                if (world[endX][i] == Tileset.NOTHING) {
+                    currSize++;
                 }
 
 
                 world[endX][i] = Tileset.FLOOR;
 
-                if (world[endX - 1][i] == Tileset.NOTHING){
+                if (world[endX - 1][i] == Tileset.NOTHING) {
                     world[endX - 1][i] = Tileset.WALL;
-                    currSize ++;
+                    currSize++;
                 }
 
-                if (world[endX+1][i] == Tileset.NOTHING){
-                    world[endX+1][i ] = Tileset.WALL;
-                    currSize ++;
+                if (world[endX + 1][i] == Tileset.NOTHING) {
+                    world[endX + 1][i] = Tileset.WALL;
+                    currSize++;
                 }
 
             }
         } else {
-            for (int i = startY; i >= endY; i--){
-                if (world[endX][i] ==  Tileset.NOTHING){
-                    currSize ++;
+            for (int i = startY; i >= endY; i--) {
+                if (world[endX][i] == Tileset.NOTHING) {
+                    currSize++;
                 }
 
                 world[endX][i] = Tileset.FLOOR;
 
-                if (world[endX - 1][i] == Tileset.NOTHING){
-                    world[endX-1][i] = Tileset.WALL;
-                    currSize ++;
+                if (world[endX - 1][i] == Tileset.NOTHING) {
+                    world[endX - 1][i] = Tileset.WALL;
+                    currSize++;
                 }
 
-                if (world[endX+1][i] == Tileset.NOTHING){
-                    world[endX+1][i] = Tileset.WALL;
-                    currSize ++;
+                if (world[endX + 1][i] == Tileset.NOTHING) {
+                    world[endX + 1][i] = Tileset.WALL;
+                    currSize++;
                 }
 
             }
@@ -477,25 +471,23 @@ public class World {
 
     /**************************************************************************************************************/
     //开始游戏
-    public void play(){
+    public void play() {
 
         //生成 玩家的 出生点
-        int X = uniform(RANDOM,0, BACK_WIDTH);
-        int Y = uniform(RANDOM,0, BACK_HEIGHT);
-
+        int X = uniform(RANDOM, 0, BACK_WIDTH);
+        int Y = uniform(RANDOM, 0, BACK_HEIGHT);
 
 
         //如果不是floor，重新生成
-        while (!world[X][Y].equals(Tileset.FLOOR)){
-            X = uniform(RANDOM,0, BACK_WIDTH);
-            Y = uniform(RANDOM,0, BACK_HEIGHT);
+        while (!world[X][Y].equals(Tileset.FLOOR)) {
+            X = uniform(RANDOM, 0, BACK_WIDTH);
+            Y = uniform(RANDOM, 0, BACK_HEIGHT);
         }
 
 
         //设置形状
-        TETile you = new TETile('@', Color.YELLOW,Color.BLACK,"You",100);
+        TETile you = new TETile('@', Color.YELLOW, Color.BLACK, "You", 100);
         world[X][Y] = you;
-
 
 
         //开始设置移动
@@ -514,39 +506,45 @@ public class World {
         boolean lose = false;
 
         //初始先加一个怪物
-        generateM ();
+        //generateM();
 
-        while (true){
+        //这一只不算在内
+
+        while (true) {
 
             //移动
-            while (StdDraw.hasNextKeyTyped() && !lose){
+            while (StdDraw.hasNextKeyTyped() && !lose) {
 
                 //读取+小写
                 direction = Character.toLowerCase(StdDraw.nextKeyTyped());
 
                 //每移动一次，更新X,Y+原位置变回floor+新位置是you / 退出
-                switch(direction){
+                switch (direction) {
 
                     //向上
                     case 'w':
                         //不是WALL/NOTHING && 不超出背景板
                         //但可以是怪物！
-                        if (!world[X][Y+1].equals(Tileset.NOTHING) && !world[X][Y+1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT){
+                        if (!world[X][Y + 1].equals(Tileset.NOTHING) && !world[X][Y + 1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT) {
 
-                            step ++;
-                            System.out.println("Yes"+step);
+                            //存入saveTXT
+                            saveTXT.print('w');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
                             //如何区分怪兽？不是floor就是
-                            if(!world[X][Y+1].equals(Tileset.FLOOR)){
-                                blood --;
+                            if (!world[X][Y + 1].equals(Tileset.FLOOR)) {
+                                blood--;
                             }
 
                             //目标点变成@
-                            world[X][Y+1] = you;
+                            world[X][Y + 1] = you;
                             //原位置变回地板
                             world[X][Y] = Tileset.FLOOR;
                             //更新X，Y坐标
-                            Y ++;
-                            countM ++;
+                            Y++;
+                            countM++;
 
                         }
                         break;
@@ -554,21 +552,26 @@ public class World {
                     //向下
                     case 's':
                         //是floor && 不超出背景板
-                        if (!world[X][Y-1].equals(Tileset.NOTHING) && !world[X][Y-1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT){
-                            step ++;
-                            System.out.println("Yes"+step);
+                        if (!world[X][Y - 1].equals(Tileset.NOTHING) && !world[X][Y - 1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT) {
+
+                            //存入saveTXT
+                            saveTXT.print('s');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
                             //如何区分怪兽？不是floor就是
-                            if(!world[X][Y-1].equals(Tileset.FLOOR)){
-                                blood --;
+                            if (!world[X][Y - 1].equals(Tileset.FLOOR)) {
+                                blood--;
                             }
 
                             //目标点变成@
-                            world[X][Y-1] = you;
+                            world[X][Y - 1] = you;
                             //原位置变回地板
                             world[X][Y] = Tileset.FLOOR;
                             //更新X，Y坐标
-                            Y --;
-                            countM ++;
+                            Y--;
+                            countM++;
 
                         }
                         break;
@@ -576,22 +579,27 @@ public class World {
                     //向左
                     case 'a':
                         //是floor && 不超出背景板
-                        if (!world[X-1][Y].equals(Tileset.NOTHING) && !world[X-1][Y].equals(Tileset.WALL) && X >= 0 && X < BACK_WIDTH){
-                            step ++;
-                            System.out.println("Yes"+step);
+                        if (!world[X - 1][Y].equals(Tileset.NOTHING) && !world[X - 1][Y].equals(Tileset.WALL) && X >= 0 && X < BACK_WIDTH) {
+
+                            //存入saveTXT
+                            saveTXT.print('a');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
                             //如何区分怪兽？不是floor就是
-                            if(!world[X-1][Y].equals(Tileset.FLOOR)){
-                                blood --;
+                            if (!world[X - 1][Y].equals(Tileset.FLOOR)) {
+                                blood--;
                             }
 
                             //目标点变成@
-                            world[X-1][Y] = you;
+                            world[X - 1][Y] = you;
                             //原位置变回地板
                             world[X][Y] = Tileset.FLOOR;
                             //更新X，Y坐标
-                            X --;
+                            X--;
 
-                            countM ++;
+                            countM++;
 
                         }
 
@@ -600,21 +608,26 @@ public class World {
                     //向右
                     case 'd':
                         //是floor && 不超出背景板
-                        if (!world[X+1][Y].equals(Tileset.WALL) && !world[X+1][Y].equals(Tileset.NOTHING) && X >= 0 && X < BACK_WIDTH){
-                            step ++;
-                            System.out.println("Yes"+step);
+                        if (!world[X + 1][Y].equals(Tileset.WALL) && !world[X + 1][Y].equals(Tileset.NOTHING) && X >= 0 && X < BACK_WIDTH) {
+
+                            //存入saveTXT
+                            saveTXT.print('d');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
                             //如何区分怪兽？不是floor就是
-                            if(!world[X+1][Y].equals(Tileset.FLOOR)){
-                                blood --;
+                            if (!world[X + 1][Y].equals(Tileset.FLOOR)) {
+                                blood--;
                             }
                             //目标点变成@
-                            world[X+1][Y] = you;
+                            world[X + 1][Y] = you;
                             //原位置变回地板
                             world[X][Y] = Tileset.FLOOR;
                             //更新X，Y坐标
-                            X ++;
+                            X++;
 
-                            countM ++;
+                            countM++;
 
 
                         }
@@ -622,106 +635,101 @@ public class World {
 
                     case ':':
                         boolean leave = false;
-                        while(!leave){
+                        while (!leave) {
                             //若下一个是q，则保存
-                            if(StdDraw.hasNextKeyTyped()){
+                            if (StdDraw.hasNextKeyTyped()) {
 
                                 char isQ = Character.toLowerCase(StdDraw.nextKeyTyped());
-                                if(isQ == 'q'){
+                                if (isQ == 'q') {
                                     //触发保存
 
                                     //保存完后，直接退出整个program
                                     System.exit(0);
                                     break;
-                                }
-                                else{
+                                } else {
                                     //离开这个while loop
                                     leave = true;
-
-                                    //若是valid的方向键
-                                    if (isQ == 'w'){
-                                        if (!world[X][Y+1].equals(Tileset.NOTHING) && !world[X][Y+1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT){
-
-                                            step ++;
-                                            System.out.println("Yes"+step);
-                                            //如何区分怪兽？不是floor就是
-                                            if(!world[X][Y+1].equals(Tileset.FLOOR)){
-                                                blood --;
-                                            }
-
-                                            //目标点变成@
-                                            world[X][Y+1] = you;
-                                            //原位置变回地板
-                                            world[X][Y] = Tileset.FLOOR;
-                                            //更新X，Y坐标
-                                            Y ++;
-                                            countM ++;
-
-                                        }
-
-                                    } else if (isQ == 's') {
-                                        if (!world[X][Y-1].equals(Tileset.NOTHING) && !world[X][Y-1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT){
-                                            step ++;
-                                            System.out.println("Yes"+step);
-                                            //如何区分怪兽？不是floor就是
-                                            if(!world[X][Y-1].equals(Tileset.FLOOR)){
-                                                blood --;
-                                            }
-
-                                            //目标点变成@
-                                            world[X][Y-1] = you;
-                                            //原位置变回地板
-                                            world[X][Y] = Tileset.FLOOR;
-                                            //更新X，Y坐标
-                                            Y --;
-                                            countM ++;
-
-                                        }
-
-                                    } else if (isQ == 'a'){
-                                        if (!world[X-1][Y].equals(Tileset.NOTHING) && !world[X-1][Y].equals(Tileset.WALL) && X >= 0 && X < BACK_WIDTH){
-                                            step ++;
-                                            System.out.println("Yes"+step);
-                                            //如何区分怪兽？不是floor就是
-                                            if(!world[X-1][Y].equals(Tileset.FLOOR)){
-                                                blood --;
-                                            }
-
-                                            //目标点变成@
-                                            world[X-1][Y] = you;
-                                            //原位置变回地板
-                                            world[X][Y] = Tileset.FLOOR;
-                                            //更新X，Y坐标
-                                            X --;
-
-                                            countM ++;
-
-                                        }
-
-                                    } else if (isQ == 'd'){
-                                        if (!world[X+1][Y].equals(Tileset.WALL) && !world[X+1][Y].equals(Tileset.NOTHING) && X >= 0 && X < BACK_WIDTH){
-                                            step ++;
-                                            System.out.println("Yes"+step);
-                                            //如何区分怪兽？不是floor就是
-                                            if(!world[X+1][Y].equals(Tileset.FLOOR)){
-                                                blood --;
-                                            }
-                                            //目标点变成@
-                                            world[X+1][Y] = you;
-                                            //原位置变回地板
-                                            world[X][Y] = Tileset.FLOOR;
-                                            //更新X，Y坐标
-                                            X ++;
-
-                                            countM ++;
-
-
-                                        }
-                                    }
-
+//                                    //若是valid的方向键
+//                                    if (isQ == 'w'){
+//                                        if (!world[X][Y+1].equals(Tileset.NOTHING) && !world[X][Y+1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT){
+//
+//                                            step ++;
+//                                            System.out.println("Yes"+step);
+//                                            //如何区分怪兽？不是floor就是
+//                                            if(!world[X][Y+1].equals(Tileset.FLOOR)){
+//                                                blood --;
+//                                            }
+//
+//                                            //目标点变成@
+//                                            world[X][Y+1] = you;
+//                                            //原位置变回地板
+//                                            world[X][Y] = Tileset.FLOOR;
+//                                            //更新X，Y坐标
+//                                            Y ++;
+//                                            countM ++;
+//
+//                                        }
+//
+//                                    } else if (isQ == 's') {
+//                                        if (!world[X][Y-1].equals(Tileset.NOTHING) && !world[X][Y-1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT){
+//                                            step ++;
+//                                            System.out.println("Yes"+step);
+//                                            //如何区分怪兽？不是floor就是
+//                                            if(!world[X][Y-1].equals(Tileset.FLOOR)){
+//                                                blood --;
+//                                            }
+//
+//                                            //目标点变成@
+//                                            world[X][Y-1] = you;
+//                                            //原位置变回地板
+//                                            world[X][Y] = Tileset.FLOOR;
+//                                            //更新X，Y坐标
+//                                            Y --;
+//                                            countM ++;
+//
+//                                        }
+//
+//                                    } else if (isQ == 'a'){
+//                                        if (!world[X-1][Y].equals(Tileset.NOTHING) && !world[X-1][Y].equals(Tileset.WALL) && X >= 0 && X < BACK_WIDTH){
+//                                            step ++;
+//                                            System.out.println("Yes"+step);
+//                                            //如何区分怪兽？不是floor就是
+//                                            if(!world[X-1][Y].equals(Tileset.FLOOR)){
+//                                                blood --;
+//                                            }
+//
+//                                            //目标点变成@
+//                                            world[X-1][Y] = you;
+//                                            //原位置变回地板
+//                                            world[X][Y] = Tileset.FLOOR;
+//                                            //更新X，Y坐标
+//                                            X --;
+//
+//                                            countM ++;
+//
+//                                        }
+//
+//                                    } else if (isQ == 'd'){
+//                                        if (!world[X+1][Y].equals(Tileset.WALL) && !world[X+1][Y].equals(Tileset.NOTHING) && X >= 0 && X < BACK_WIDTH){
+//                                            step ++;
+//                                            System.out.println("Yes"+step);
+//                                            //如何区分怪兽？不是floor就是
+//                                            if(!world[X+1][Y].equals(Tileset.FLOOR)){
+//                                                blood --;
+//                                            }
+//                                            //目标点变成@
+//                                            world[X+1][Y] = you;
+//                                            //原位置变回地板
+//                                            world[X][Y] = Tileset.FLOOR;
+//                                            //更新X，Y坐标
+//                                            X ++;
+//
+//                                            countM ++;
+//
+//
+//                                        }
+//                                    }
                                 }
-
-
                             }
                         }
                         break;
@@ -737,64 +745,61 @@ public class World {
             }
 
 
-
             //每五步加一个怪物
 
-            if(countM%5==0 && countM!= 0){
-                generateM ();
+            if (countM % 5 == 0 && countM != 0) {
+                //generateM();
                 countM = 0;
             }
 
             //显示血量
-            StdDraw.setPenColor(StdDraw.PINK);
-            int i = blood;
-            String heart = "";
-
-            while(i > 0){
-                heart +=" ❤";
-                i--;
-            }
-
-            if (heart.equals("")){
-                heart = "You lose!";
-
-                //user的位置变成X
-                TETile die = new TETile('X', RED,WHITE,"Die",102);
-                world[X][Y] = die;
-                lose = true;
-            }
+//            StdDraw.setPenColor(StdDraw.PINK);
+//            int i = blood;
+//            String heart = "";
+//
+//            while (i > 0) {
+//                heart += " ❤";
+//                i--;
+//            }
+//
+//            if (heart.equals("")) {
+//                heart = "You lose!";
+//
+//                //user的位置变成X
+//                TETile die = new TETile('X', RED, WHITE, "Die", 102);
+//                world[X][Y] = die;
+//                lose = true;
+//            }
 
 
             ter.renderFrame(world);
 
             //
-//            Font heartStyle= new Font ("default", 0, 45);
 //            //使用上述字体
-//            StdDraw.setFont(heartStyle);
-            StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.textLeft (1, BACK_HEIGHT+2, heart);
+//            StdDraw.setPenColor(StdDraw.RED);
+//            StdDraw.textLeft(1, BACK_HEIGHT + 2, heart);
 
 
             /****************************************************************************************************/
             //研究鼠标
 
             //鼠标的X轴
-            int Xmouse = (int)StdDraw.mouseX();
+            int Xmouse = (int) StdDraw.mouseX();
             //鼠标的Y轴
-            int Ymouse = (int)StdDraw.mouseY();
+            int Ymouse = (int) StdDraw.mouseY();
 
             //tile默认为外面
-            TETile tile = new TETile('O', RED,WHITE,"Outside the board",103);
+            TETile tile = new TETile('O', RED, WHITE, "Outside the board", 103);
 
             //确认鼠标在world中吗，因为背景板比world大
-            if(Xmouse >= 0 && Xmouse < world.length && Ymouse < world[0].length && Ymouse>= 0){
+            if (Xmouse >= 0 && Xmouse < world.length && Ymouse < world[0].length && Ymouse >= 0) {
                 tile = world[Xmouse][Ymouse];
             }
 
             /****************************************************************************************************/
 
             StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
-            StdDraw.textLeft (10, BACK_HEIGHT+2, tile.description());
+            StdDraw.textLeft(10, BACK_HEIGHT + 2, tile.description());
 
             //输了怎么样，等后面有了存 再说
 
@@ -806,39 +811,506 @@ public class World {
         }
 
 
-
-
     }
-
 
 
     //生成怪物
-    public void generateM (){
-        //生成 敌人的 出生点
-        int mX = uniform(RANDOM,0, BACK_WIDTH);
-        int mY = uniform(RANDOM,0, BACK_HEIGHT);
+//    public void generateM() {
+//        //生成 敌人的 出生点
+//        int mX = uniform(RANDOM, 0, BACK_WIDTH);
+//        int mY = uniform(RANDOM, 0, BACK_HEIGHT);
+//
+//
+//        while (!world[mX][mY].equals(Tileset.FLOOR)) {
+//            mX = uniform(RANDOM, 0, BACK_WIDTH);
+//            mY = uniform(RANDOM, 0, BACK_HEIGHT);
+//        }
+//
+//
+//        TETile M = new TETile('☠', Color.RED, lightGray, "Monster", 101);
+//        world[mX][mY] = M;
+//
+//
+//    }
 
 
-        while (!world[mX][mY].equals(Tileset.FLOOR)){
-            mX = uniform(RANDOM,0, BACK_WIDTH);
-            mY = uniform(RANDOM,0, BACK_HEIGHT);
+    //读文件来 复原 上一次的world
+    //基础设置要和play一样
+
+    //吃位移+接着玩
+    public void replay(In eat) {
+
+        //先老样子，创小人，怪兽和血量
+        //生成 玩家的 出生点
+        int X = uniform(RANDOM, 0, BACK_WIDTH);
+        int Y = uniform(RANDOM, 0, BACK_HEIGHT);
+
+
+        //如果不是floor，重新生成
+        while (!world[X][Y].equals(Tileset.FLOOR)) {
+            X = uniform(RANDOM, 0, BACK_WIDTH);
+            Y = uniform(RANDOM, 0, BACK_HEIGHT);
         }
 
+        //设置用户形状
+        TETile you = new TETile('@', Color.YELLOW, Color.BLACK, "You", 100);
+        world[X][Y] = you;
 
-        TETile M = new TETile('*', Color.RED,Color.PINK,"Monster",101);
-        world[mX][mY] = M;
 
+        //开始设置移动
+        //接下来的鼠标之类的 也都会在这里面
+        char direction;
+
+        //计算怪兽的个数
+        int countM = 0;
+
+        //血量: 五条命
+        int blood = 5;
+
+        int step = 0;
+
+        String heart = "";
+
+        //输了
+        boolean lose = false;
+
+        //初始先加一个怪物
+        //generateM();
+
+        System.out.println("Hiiiii!");
+
+        /**********************************************************************************************************************************/
+        //开始吃
+        //eat一进来就是第二行
+        while (eat.hasNextLine()){
+            //位置也都在一行里
+            String line = eat.readLine();
+
+            //若存在第二行
+            if (line != null) {
+                //分块
+                String[] parts = line.split(",");
+
+                //开始吃所有的有效位置，因为我只保存有效位置
+                for (String to : parts) {
+                    //若不为空
+                    if (!to.equals("")) {
+
+
+                        //开始换位置
+                        if (to.equals("w")) {
+                            step++;
+                            System.out.println("Yes" + step);
+                            //如何区分怪兽？不是floor就是
+                            if (!world[X][Y + 1].equals(Tileset.FLOOR)) {
+                                blood--;
+                            }
+                            //目标点变成@
+                            world[X][Y + 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y++;
+                            countM++;
+
+                        } else if (to.equals("s")) {
+                            step++;
+                            System.out.println("Yes" + step);
+                            //如何区分怪兽？不是floor就是
+                            if (!world[X][Y - 1].equals(Tileset.FLOOR)) {
+                                blood--;
+                            }
+                            //目标点变成@
+                            world[X][Y - 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y--;
+                            countM++;
+
+                        } else if (to.equals("a")) {
+                            step++;
+                            System.out.println("Yes" + step);
+                            //如何区分怪兽？不是floor就是
+                            if (!world[X - 1][Y].equals(Tileset.FLOOR)) {
+                                blood--;
+                            }
+
+                            //目标点变成@
+                            world[X - 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X--;
+
+                            countM++;
+
+                        } else if (to.equals("d")) {
+                            step++;
+                            System.out.println("Yes" + step);
+                            //如何区分怪兽？不是floor就是
+                            if (!world[X + 1][Y].equals(Tileset.FLOOR)) {
+                                blood--;
+                            }
+                            //目标点变成@
+                            world[X + 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X++;
+
+                            countM++;
+                        }
+
+
+                        //Reaction部分
+
+                        //开始计算血量等等
+                        //每五步加一个怪物
+
+                        if (countM % 5 == 0 && countM != 0) {
+                            //generateM();
+                            countM = 0;
+                        }
+
+
+                    }
+
+                }
+            }
+        }
+        //出来后
+
+        //显示血量
+//        StdDraw.setPenColor(StdDraw.PINK);
+//        int i = blood;
+//
+//
+//        while (i > 0) {
+//            heart += " ❤";
+//            i--;
+//        }
+//
+//        if (heart.equals("")) {
+//            heart = "You lose!";
+//
+//            //user的位置变成X
+//            TETile die = new TETile('X', RED, WHITE, "Die", 102);
+//            world[X][Y] = die;
+//            lose = true;
+//        }
+//        //等上面结束了
+//
+        ter.renderFrame(world);
+//        StdDraw.setPenColor(StdDraw.RED);
+//        StdDraw.textLeft(1, BACK_HEIGHT + 2, heart);
+
+
+        //目前打算放到后面开始diy部分，不仅会有while true，所以可以 使用 鼠标识别
+        while (true) {
+
+            //移动
+            while (StdDraw.hasNextKeyTyped() && !lose) {
+
+                //读取+小写
+                direction = Character.toLowerCase(StdDraw.nextKeyTyped());
+
+                //每移动一次，更新X,Y+原位置变回floor+新位置是you / 退出
+                switch (direction) {
+
+                    //向上
+                    case 'w':
+                        //不是WALL/NOTHING && 不超出背景板
+                        //但可以是怪物！
+                        if (!world[X][Y + 1].equals(Tileset.NOTHING) && !world[X][Y + 1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT) {
+
+                            //存入saveTXT
+                            saveTXT.print('w');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+                            //如何区分怪兽？不是floor就是
+                            if (!world[X][Y + 1].equals(Tileset.FLOOR)) {
+                                blood--;
+                            }
+
+                            //目标点变成@
+                            world[X][Y + 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y++;
+                            countM++;
+
+                        }
+                        break;
+
+                    //向下
+                    case 's':
+                        //是floor && 不超出背景板
+                        if (!world[X][Y - 1].equals(Tileset.NOTHING) && !world[X][Y - 1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT) {
+
+                            //存入saveTXT
+                            saveTXT.print('s');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+                            //如何区分怪兽？不是floor就是
+                            if (!world[X][Y - 1].equals(Tileset.FLOOR)) {
+                                blood--;
+                            }
+
+                            //目标点变成@
+                            world[X][Y - 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y--;
+                            countM++;
+
+                        }
+                        break;
+
+                    //向左
+                    case 'a':
+                        //是floor && 不超出背景板
+                        if (!world[X - 1][Y].equals(Tileset.NOTHING) && !world[X - 1][Y].equals(Tileset.WALL) && X >= 0 && X < BACK_WIDTH) {
+
+                            //存入saveTXT
+                            saveTXT.print('a');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+                            //如何区分怪兽？不是floor就是
+                            if (!world[X - 1][Y].equals(Tileset.FLOOR)) {
+                                blood--;
+                            }
+
+                            //目标点变成@
+                            world[X - 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X--;
+
+                            countM++;
+
+                        }
+
+                        break;
+
+                    //向右
+                    case 'd':
+                        //是floor && 不超出背景板
+                        if (!world[X + 1][Y].equals(Tileset.WALL) && !world[X + 1][Y].equals(Tileset.NOTHING) && X >= 0 && X < BACK_WIDTH) {
+
+                            //存入saveTXT
+                            saveTXT.print('d');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+                            //如何区分怪兽？不是floor就是
+                            if (!world[X + 1][Y].equals(Tileset.FLOOR)) {
+                                blood--;
+                            }
+                            //目标点变成@
+                            world[X + 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X++;
+
+                            countM++;
+
+
+                        }
+                        break;
+
+                    case ':':
+                        boolean leave = false;
+                        while (!leave) {
+                            //若下一个是q，则保存
+                            if (StdDraw.hasNextKeyTyped()) {
+
+                                char isQ = Character.toLowerCase(StdDraw.nextKeyTyped());
+                                if (isQ == 'q') {
+                                    //触发保存
+
+                                    //保存完后，直接退出整个program
+                                    System.exit(0);
+                                    break;
+                                } else {
+                                    //离开这个while loop
+                                    leave = true;
+//                                    //若是valid的方向键
+//                                    if (isQ == 'w'){
+//                                        if (!world[X][Y+1].equals(Tileset.NOTHING) && !world[X][Y+1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT){
+//
+//                                            step ++;
+//                                            System.out.println("Yes"+step);
+//                                            //如何区分怪兽？不是floor就是
+//                                            if(!world[X][Y+1].equals(Tileset.FLOOR)){
+//                                                blood --;
+//                                            }
+//
+//                                            //目标点变成@
+//                                            world[X][Y+1] = you;
+//                                            //原位置变回地板
+//                                            world[X][Y] = Tileset.FLOOR;
+//                                            //更新X，Y坐标
+//                                            Y ++;
+//                                            countM ++;
+//
+//                                        }
+//
+//                                    } else if (isQ == 's') {
+//                                        if (!world[X][Y-1].equals(Tileset.NOTHING) && !world[X][Y-1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT){
+//                                            step ++;
+//                                            System.out.println("Yes"+step);
+//                                            //如何区分怪兽？不是floor就是
+//                                            if(!world[X][Y-1].equals(Tileset.FLOOR)){
+//                                                blood --;
+//                                            }
+//
+//                                            //目标点变成@
+//                                            world[X][Y-1] = you;
+//                                            //原位置变回地板
+//                                            world[X][Y] = Tileset.FLOOR;
+//                                            //更新X，Y坐标
+//                                            Y --;
+//                                            countM ++;
+//
+//                                        }
+//
+//                                    } else if (isQ == 'a'){
+//                                        if (!world[X-1][Y].equals(Tileset.NOTHING) && !world[X-1][Y].equals(Tileset.WALL) && X >= 0 && X < BACK_WIDTH){
+//                                            step ++;
+//                                            System.out.println("Yes"+step);
+//                                            //如何区分怪兽？不是floor就是
+//                                            if(!world[X-1][Y].equals(Tileset.FLOOR)){
+//                                                blood --;
+//                                            }
+//
+//                                            //目标点变成@
+//                                            world[X-1][Y] = you;
+//                                            //原位置变回地板
+//                                            world[X][Y] = Tileset.FLOOR;
+//                                            //更新X，Y坐标
+//                                            X --;
+//
+//                                            countM ++;
+//
+//                                        }
+//
+//                                    } else if (isQ == 'd'){
+//                                        if (!world[X+1][Y].equals(Tileset.WALL) && !world[X+1][Y].equals(Tileset.NOTHING) && X >= 0 && X < BACK_WIDTH){
+//                                            step ++;
+//                                            System.out.println("Yes"+step);
+//                                            //如何区分怪兽？不是floor就是
+//                                            if(!world[X+1][Y].equals(Tileset.FLOOR)){
+//                                                blood --;
+//                                            }
+//                                            //目标点变成@
+//                                            world[X+1][Y] = you;
+//                                            //原位置变回地板
+//                                            world[X][Y] = Tileset.FLOOR;
+//                                            //更新X，Y坐标
+//                                            X ++;
+//
+//                                            countM ++;
+//
+//
+//                                        }
+//                                    }
+                                }
+                            }
+                        }
+                        break;
+
+
+                    //若输入其他乱七八糟的，自动忽略
+                    default:
+                        break;
+
+
+                }
+
+            }
+
+
+            //每五步加一个怪物
+
+            if (countM % 5 == 0 && countM != 0) {
+                //generateM();
+                countM = 0;
+            }
+
+            //显示血量
+//            StdDraw.setPenColor(StdDraw.PINK);
+//            int i = blood;
+//            String heart = "";
+//
+//            while (i > 0) {
+//                heart += " ❤";
+//                i--;
+//            }
+//
+//            if (heart.equals("")) {
+//                heart = "You lose!";
+//
+//                //user的位置变成X
+//                TETile die = new TETile('X', RED, WHITE, "Die", 102);
+//                world[X][Y] = die;
+//                lose = true;
+//            }
+
+
+            ter.renderFrame(world);
+
+            //
+//            //使用上述字体
+//            StdDraw.setPenColor(StdDraw.RED);
+//            StdDraw.textLeft(1, BACK_HEIGHT + 2, heart);
+
+
+            /****************************************************************************************************/
+            //研究鼠标
+
+            //鼠标的X轴
+            int Xmouse = (int) StdDraw.mouseX();
+            //鼠标的Y轴
+            int Ymouse = (int) StdDraw.mouseY();
+
+            //tile默认为外面
+            TETile tile = new TETile('O', RED, WHITE, "Outside the board", 103);
+
+            //确认鼠标在world中吗，因为背景板比world大
+            if (Xmouse >= 0 && Xmouse < world.length && Ymouse < world[0].length && Ymouse >= 0) {
+                tile = world[Xmouse][Ymouse];
+            }
+
+            /****************************************************************************************************/
+
+            StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
+            StdDraw.textLeft(10, BACK_HEIGHT + 2, tile.description());
+
+            //输了怎么样，等后面有了存 再说
+
+            //Display
+            StdDraw.show();
+            StdDraw.pause(30);
+
+
+        }
 
 
     }
 
 
-
-
-
-
-
-
-
-
 }
+
+

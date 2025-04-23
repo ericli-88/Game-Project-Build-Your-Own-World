@@ -1,5 +1,7 @@
 package core;
 
+import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.Out;
 import edu.princeton.cs.algs4.StdDraw;
 import tileengine.TERenderer;
 
@@ -17,16 +19,16 @@ import static utils.RandomUtils.uniform;
 public class Main {
 
     //确定 背景板的 尺寸
-    private static final int BACK_HEIGHT = 58;
+    private static final int BACK_HEIGHT = 56;
 
     private static final int BACK_WIDTH = 78;
 
-    TERenderer ter;
+    //TERenderer ter;
 
 
     public static void main(String[] args) {
         TERenderer ter = new TERenderer();
-        ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
+        ter.initialize(BACK_WIDTH,BACK_HEIGHT+3);
         //向用户展示menu
         menu();
         char c;
@@ -58,13 +60,22 @@ public class Main {
                     //开始一个新的世界
                     case 'n':
                         entered = true;
+
+                        //创一个test的文件夹
+                        new java.io.File("test").mkdirs();
+
+                        //创造一个out variable来储存 save.txt方便一会儿将东西全都存进save.txt里
+                        Out saveTXT = new Out("test/save.txt");
+
                         //呼叫 输入 seed 的界面
-                        long finalSeed = SEEDmenu();
+                        long finalSeed = SEEDmenu(saveTXT);
                         //先创建一个背景板
                         //TERenderer ter = new TERenderer();
                         ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
+
                         //创一个世界
-                        World x = new World(finalSeed,BACK_HEIGHT,BACK_WIDTH,ter);
+                        World x = new World(finalSeed,BACK_HEIGHT,BACK_WIDTH,ter,saveTXT);
+
                         x.createWorld ();
                         x.play();
                         break;
@@ -74,6 +85,61 @@ public class Main {
                     case 'l':
                         //从保存文件中加在已保存的游戏
                         entered = true;
+
+                        //先把现有的内容存起来
+                        In getOldSub = new In("test/save.txt");
+                        In getOld = new In("test/save.txt");
+
+                        String previous = getOldSub.readAll();
+
+                        //创一个新的 out variable
+                        Out add = new Out("test/save.txt");
+                        //把原本的补上去
+                        add.print(previous);
+                        //若原本结尾没有换行符
+                        if (! previous.endsWith("\n")){
+                            add.println();
+                        }
+
+                        //开始提前改动一下 world，再进行使用
+                        //目前思路是在创一个新的world variable之后，创一个新的world func：
+                        // 一点点吃文件里的东西，吃完，改完，再call play，继续游戏
+
+
+                        //先把seed读出来得了（全在第一行）
+                        String line = getOld.readLine();
+
+                        //分块
+                        String[] parts = line.split(",");
+
+                        //创一个空string来作为seed的string表达
+                        String seedSub = "";
+
+                        for (String num : parts){
+                            //若不为空
+                            if (! num.equals("")){
+                                seedSub += num;
+                            }
+
+                        }
+
+                        //得 之前的 seed
+                        Long oldSeed = Long.parseLong(seedSub);
+
+                        //渲染
+                        ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
+
+                        //创一个世界
+                        World y = new World(oldSeed,BACK_HEIGHT,BACK_WIDTH,ter,add);
+
+                        //1. 世界
+                        y.createWorld();
+
+                        //2. 修改 + 开玩一体式
+                        y.replay(getOld);
+
+
+
 
 
                         break;
@@ -130,11 +196,11 @@ public class Main {
 
 
     //输入种子的版面
-    public static long SEEDmenu(/*TERenderer ter*/){
+    public static long SEEDmenu(Out saveTXT){
 
+        //saveTXT 把用户的seed都存进去
         //刷新版面
         StdDraw.clear(BLACK);
-
 
         //先考虑 怎么吃seed
         //开始吃输入
@@ -145,6 +211,8 @@ public class Main {
         //用户每输入一个数，就加到finalSeed里
         char c;
 
+
+        //我存文字的想法：一连串数字，每个用空格分开，遇到s，就换行（不添加s）
         while (true) {
 
             // hasNextKeyTyped checks if the user has typed a key that we haven't processed.
@@ -161,6 +229,8 @@ public class Main {
                 //如果是，更新seed
                 if (Character.isDigit(c)){
                     finalSeed += c;
+                    saveTXT.print(c);
+                    saveTXT.print(',');
                     break;
                 }
                 //如果不是，那就k按是不是S，如果也不是，就当没发生过，吃下一个
@@ -169,6 +239,10 @@ public class Main {
 
                         //若Stiring非空
                         if(!finalSeed.equals("")){
+
+                            //添加换行
+                            saveTXT.println();
+
                             //把最新的种子输出出去
                             return Long.parseLong(finalSeed);
                         }
