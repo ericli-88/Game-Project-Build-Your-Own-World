@@ -474,7 +474,7 @@ public class World {
 
     /**************************************************************************************************************/
     //开始游戏
-    public void play() {
+    public boolean play() {
 
         //生成 玩家的 出生点
         int X = uniform(RANDOM, 0, BACK_WIDTH);
@@ -501,8 +501,8 @@ public class World {
         int countM = 0;
 
         //确定有几个金币: 随机生成： 5 - 16
-        //int numCoins = uniform(RANDOM, 5, 16);
-        int numCoins = uniform(RANDOM, 1, 2);
+        int numCoins = uniform(RANDOM, 5, 16);
+        //int numCoins = uniform(RANDOM, 1, 2);
 
         //开始散布金币
         for (int i = 0; i < numCoins; i++) {
@@ -712,17 +712,41 @@ public class World {
             }
 
 
-            if (light){
+//            if (light){
+//                ter.renderFrame(world);
+//            } else{
+//                ter.partFrame(world,X,Y);
+//            }
+
+            // 开始讨论有没有光+是不是收集完了
+            if (light && numCoins != 0) {
                 ter.renderFrame(world);
-            } else{
-                ter.partFrame(world,X,Y);
+            } else if (!light && numCoins != 0) {
+                ter.partFrame(world, X, Y);
+            } else if (numCoins == 0) {
+
+                TETile[][] allCoins = new TETile[world.length][world[0].length];
+
+                //全屏金币
+                for (int x = 0; x < allCoins.length; x++) {
+                    for (int y = 0; y < allCoins[0].length; y++) {
+                        //world[x][y] = Tileset.NOTHING;
+                        allCoins[x][y] = Coins;
+                    }
+                }
+
+                //若有光
+                if (light) {
+                    ter.renderFrame(allCoins);
+                } else {
+                    ter.partFrame(allCoins, X, Y);
+                }
             }
 
             //
             //使用上述字体:输出金币的个数
             StdDraw.setPenColor(StdDraw.YELLOW);
             StdDraw.textLeft(1, BACK_HEIGHT + 3, coin);
-
 
 
             /****************************************************************************************************/
@@ -748,13 +772,13 @@ public class World {
 
             //输出开关语句
             StdDraw.setPenColor(StdDraw.WHITE);
-            if (light){
+            if (light) {
                 StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
                 StdDraw.textLeft(29, BACK_HEIGHT + 2, "Open (current)");
 
-            } else{
+            } else {
                 StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
@@ -769,9 +793,9 @@ public class World {
             StdDraw.pause(30);
 
             //若结束了，回到menu
-            if (numCoins == 0){
+            if (numCoins == 0) {
                 StdDraw.pause(2000);
-                return;
+                return true;
             }
 
 
@@ -806,7 +830,7 @@ public class World {
 
 
     //吃位移+接着玩
-    public void replay(In eat) {
+    public boolean replay(In eat) {
 
         //先老样子，创小人，怪兽和血量
         //生成 玩家的 出生点
@@ -833,8 +857,8 @@ public class World {
         int countM = 0;
 
         //确定有几个金币: 随机生成： 5 - 16
-        //int numCoins = uniform(RANDOM, 5, 16);
-        int numCoins = uniform(RANDOM, 1, 2);
+        int numCoins = uniform(RANDOM, 5, 16);
+        //int numCoins = uniform(RANDOM, 1, 2);
 
         int step = 0;
 
@@ -938,7 +962,7 @@ public class World {
                             X++;
 
                             countM++;
-                        } else if (to.equals("b")){
+                        } else if (to.equals("b")) {
 
                             //开/关
                             light = !light;
@@ -980,10 +1004,6 @@ public class World {
 //        }
 //        StdDraw.setPenColor(StdDraw.RED);
 //        StdDraw.textLeft(1, BACK_HEIGHT + 2, heart);
-
-
-
-
 
 
         //目前打算放到后面开始diy部分，不仅会有while true，所以可以 使用 鼠标识别
@@ -1176,10 +1196,29 @@ public class World {
             }
 
 
-            if (light){
+            // 开始讨论有没有光+是不是收集完了
+            if (light && numCoins != 0) {
                 ter.renderFrame(world);
-            } else{
-                ter.partFrame(world,X,Y);
+            } else if (!light && numCoins != 0) {
+                ter.partFrame(world, X, Y);
+            } else if (numCoins == 0) {
+
+                TETile[][] allCoins = new TETile[world.length][world[0].length];
+
+                //全屏金币
+                for (int x = 0; x < allCoins.length; x++) {
+                    for (int y = 0; y < allCoins[0].length; y++) {
+                        //world[x][y] = Tileset.NOTHING;
+                        allCoins[x][y] = Coins;
+                    }
+                }
+
+                //若有光
+                if (light) {
+                    ter.renderFrame(allCoins);
+                } else {
+                    ter.partFrame(allCoins, X, Y);
+                }
             }
 
             //
@@ -1211,13 +1250,13 @@ public class World {
 
             //输出开关语句
             StdDraw.setPenColor(StdDraw.WHITE);
-            if (light){
+            if (light) {
                 StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
                 StdDraw.textLeft(29, BACK_HEIGHT + 2, "Open (current)");
 
-            } else{
+            } else {
                 StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
@@ -1231,9 +1270,9 @@ public class World {
             StdDraw.pause(30);
 
             //若结束了，回到menu
-            if (numCoins == 0){
+            if (numCoins == 0) {
                 StdDraw.pause(2000);
-                return;
+                return true;
             }
 
         }
