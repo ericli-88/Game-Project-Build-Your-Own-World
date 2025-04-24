@@ -2,6 +2,9 @@ package tileengine;
 
 import java.awt.Color;
 
+import static java.awt.Color.ORANGE;
+import static java.awt.Color.yellow;
+
 /**
  * Contains constant tile objects, to avoid having to remake the same tiles in different parts of
  * the code.
@@ -34,6 +37,10 @@ public class Tileset {
     public static final TETile TREE = new TETile('♠', Color.green, Color.black, "tree", 11);
 
     public static final TETile CELL = new TETile('█', Color.white, Color.black, "cell", 12);
+
+
+
+    public static final TETile Coins = new TETile('$', ORANGE, yellow, "Coin", 101);
 }
 
 

@@ -27,132 +27,132 @@ public class Main {
 
 
     public static void main(String[] args) {
-        TERenderer ter = new TERenderer();
-        ter.initialize(BACK_WIDTH,BACK_HEIGHT+3);
-        //向用户展示menu
-        menu();
-        char c;
-        boolean entered = false;
-        while (!entered) {
-            //目前感觉不需要 while true， menu出现一次就好了
-
-            // hasNextKeyTyped checks if the user has typed a key that we haven't processed.
-            // This loop runs until all unprocessed keys are processed.
-            // If there are no unprocessed keys, we go back to the outer infinite loop to wait for the next key.
-            while (StdDraw.hasNextKeyTyped()) {
-
-                // nextKeyTyped returns the next key to process.
-                // Always check hasNextKeyTyped before calling nextKeyTyped.
-                // If you call nextKeyTyped and there's no key to process, code will crash!
-                c = StdDraw.nextKeyTyped();
-
-                c = Character.toLowerCase(c);
-
-                // Switch statements can be useful to replace long if-else statements!
-                switch (c) {
-
-                    //结束
-                    case 'q':
-                        System.exit(0); // Closes the game window and quits the game.
-                        entered = true;
-                        break;
-
-                    //开始一个新的世界
-                    case 'n':
-                        entered = true;
-
-                        //创一个test的文件夹
-                        new java.io.File("test").mkdirs();
-
-                        //创造一个out variable来储存 save.txt方便一会儿将东西全都存进save.txt里
-                        Out saveTXT = new Out("test/save.txt");
-
-                        //呼叫 输入 seed 的界面
-                        long finalSeed = SEEDmenu(saveTXT);
-                        //先创建一个背景板
-                        //TERenderer ter = new TERenderer();
-                        ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
-
-                        //创一个世界
-                        World x = new World(finalSeed,BACK_HEIGHT,BACK_WIDTH,ter,saveTXT);
-
-                        x.createWorld ();
-                        x.play();
-                        break;
 
 
 
-                    case 'l':
-                        //从保存文件中加在已保存的游戏
-                        entered = true;
+        while (true){
+            TERenderer ter = new TERenderer();
+            ter.initialize(BACK_WIDTH,BACK_HEIGHT+3);
 
-                        //先把现有的内容存起来
-                        In getOldSub = new In("test/save.txt");
-                        In getOld = new In("test/save.txt");
+            //向用户展示menu
+            menu();
+            char c;
+            boolean entered = false;
+            while (!entered) {
+                //目前感觉不需要 while true， menu出现一次就好了
 
-                        String previous = getOldSub.readAll();
+                // hasNextKeyTyped checks if the user has typed a key that we haven't processed.
+                // This loop runs until all unprocessed keys are processed.
+                // If there are no unprocessed keys, we go back to the outer infinite loop to wait for the next key.
+                while (StdDraw.hasNextKeyTyped()) {
 
-                        //创一个新的 out variable
-                        Out add = new Out("test/save.txt");
-                        //把原本的补上去
-                        add.print(previous);
-                        //若原本结尾没有换行符
-                        if (! previous.endsWith("\n")){
-                            add.println();
-                        }
+                    // nextKeyTyped returns the next key to process.
+                    // Always check hasNextKeyTyped before calling nextKeyTyped.
+                    // If you call nextKeyTyped and there's no key to process, code will crash!
+                    c = StdDraw.nextKeyTyped();
 
-                        //开始提前改动一下 world，再进行使用
-                        //目前思路是在创一个新的world variable之后，创一个新的world func：
-                        // 一点点吃文件里的东西，吃完，改完，再call play，继续游戏
+                    c = Character.toLowerCase(c);
+
+                    // Switch statements can be useful to replace long if-else statements!
+                    switch (c) {
+
+                        //结束
+                        case 'q':
+                            System.exit(0); // Closes the game window and quits the game.
+                            entered = true;
+                            break;
+
+                        //开始一个新的世界
+                        case 'n':
+                            entered = true;
+
+                            //创一个test的文件夹
+                            new java.io.File("test").mkdirs();
+
+                            //创造一个out variable来储存 save.txt方便一会儿将东西全都存进save.txt里
+                            Out saveTXT = new Out("test/save.txt");
+
+                            //呼叫 输入 seed 的界面
+                            long finalSeed = SEEDmenu(saveTXT);
+                            //先创建一个背景板
+                            //TERenderer ter = new TERenderer();
+                            ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
+
+                            //创一个世界
+                            World x = new World(finalSeed,BACK_HEIGHT,BACK_WIDTH,ter,saveTXT);
+
+                            x.createWorld ();
+                            x.play();
+                            break;
 
 
-                        //先把seed读出来得了（全在第一行）
-                        String line = getOld.readLine();
 
-                        //分块
-                        String[] parts = line.split(",");
+                        case 'l':
+                            //从保存文件中加在已保存的游戏
+                            entered = true;
 
-                        //创一个空string来作为seed的string表达
-                        String seedSub = "";
+                            //先把现有的内容存起来
+                            In getOldSub = new In("test/save.txt");
+                            In getOld = new In("test/save.txt");
 
-                        for (String num : parts){
-                            //若不为空
-                            if (! num.equals("")){
-                                seedSub += num;
+                            String previous = getOldSub.readAll();
+
+                            //创一个新的 out variable
+                            Out add = new Out("test/save.txt");
+                            //把原本的补上去
+                            add.print(previous);
+                            //若原本结尾没有换行符
+                            if (! previous.endsWith("\n")){
+                                add.println();
                             }
 
-                        }
-
-                        //得 之前的 seed
-                        Long oldSeed = Long.parseLong(seedSub);
-
-                        //渲染
-                        ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
-
-                        //创一个世界
-                        World y = new World(oldSeed,BACK_HEIGHT,BACK_WIDTH,ter,add);
-
-                        //1. 世界
-                        y.createWorld();
-
-                        //2. 修改 + 开玩一体式
-                        y.replay(getOld);
+                            //开始提前改动一下 world，再进行使用
+                            //目前思路是在创一个新的world variable之后，创一个新的world func：
+                            // 一点点吃文件里的东西，吃完，改完，再call play，继续游戏
 
 
+                            //先把seed读出来得了（全在第一行）
+                            String line = getOld.readLine();
+
+                            //分块
+                            String[] parts = line.split(",");
+
+                            //创一个空string来作为seed的string表达
+                            String seedSub = "";
+
+                            for (String num : parts){
+                                //若不为空
+                                if (! num.equals("")){
+                                    seedSub += num;
+                                }
+
+                            }
+
+                            //得 之前的 seed
+                            Long oldSeed = Long.parseLong(seedSub);
+
+                            //渲染
+                            ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
+
+                            //创一个世界
+                            World y = new World(oldSeed,BACK_HEIGHT,BACK_WIDTH,ter,add);
+
+                            //1. 世界
+                            y.createWorld();
+
+                            //2. 修改 + 开玩一体式
+                            y.replay(getOld);
 
 
 
-                        break;
 
 
-
+                            break;
+                    }
                 }
-
             }
-
-
-
         }
+
 
 
         // build your own world!
