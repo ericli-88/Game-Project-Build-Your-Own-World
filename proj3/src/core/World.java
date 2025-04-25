@@ -502,7 +502,7 @@ public class World {
 
         //确定有几个金币: 随机生成： 5 - 16
         int numCoins = uniform(RANDOM, 5, 16);
-        //int numCoins = uniform(RANDOM, 1, 2);
+        //int numCoins = uniform(RANDOM, 1, 3);
 
         //开始散布金币
         for (int i = 0; i < numCoins; i++) {
@@ -794,7 +794,7 @@ public class World {
 
             //若结束了，回到menu
             if (numCoins == 0) {
-                StdDraw.pause(2000);
+                StdDraw.pause(1500);
                 return true;
             }
 
@@ -858,7 +858,7 @@ public class World {
 
         //确定有几个金币: 随机生成： 5 - 16
         int numCoins = uniform(RANDOM, 5, 16);
-        //int numCoins = uniform(RANDOM, 1, 2);
+        //int numCoins = uniform(RANDOM, 1, 3);
 
         int step = 0;
 
@@ -1271,9 +1271,591 @@ public class World {
 
             //若结束了，回到menu
             if (numCoins == 0) {
-                StdDraw.pause(2000);
+                StdDraw.pause(1500);
                 return true;
             }
+
+        }
+
+
+    }
+
+
+
+
+    public void play_No_Coins(){
+        //生成 玩家的 出生点
+        int X = uniform(RANDOM, 0, BACK_WIDTH);
+        int Y = uniform(RANDOM, 0, BACK_HEIGHT);
+
+
+        //如果不是floor，重新生成
+        while (!world[X][Y].equals(Tileset.FLOOR)) {
+            X = uniform(RANDOM, 0, BACK_WIDTH);
+            Y = uniform(RANDOM, 0, BACK_HEIGHT);
+        }
+
+
+        //设置形状
+        TETile you = new TETile('@', Color.magenta, cyan, "You", 100);
+        world[X][Y] = you;
+
+
+        //开始设置移动
+        //接下来的鼠标之类的 也都会在这里面
+        char direction;
+
+
+        int step = 0;
+
+        //吃完所有金币
+        boolean lose = false;
+
+        //开灯
+        boolean light = true;
+
+
+        //这一只不算在内
+
+        while (true) {
+
+            //移动
+            while (StdDraw.hasNextKeyTyped() && !lose) {
+
+                //读取+小写
+                direction = Character.toLowerCase(StdDraw.nextKeyTyped());
+
+                //每移动一次，更新X,Y+原位置变回floor+新位置是you / 退出
+                switch (direction) {
+
+                    //关灯/开灯
+                    case 'b':
+                        light = !light;
+                        //存入saveTXT
+                        saveTXT.print('b');
+                        saveTXT.print(',');
+                        break;
+
+                    //向上
+                    case 'w':
+                        //不是WALL/NOTHING && 不超出背景板
+                        //但可以是怪物！
+                        if (!world[X][Y + 1].equals(Tileset.NOTHING) && !world[X][Y + 1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT) {
+
+                            //存入saveTXT
+                            saveTXT.print('w');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+
+
+                            //目标点变成@
+                            world[X][Y + 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y++;
+
+                        }
+                        break;
+
+                    //向下
+                    case 's':
+                        //是floor && 不超出背景板
+                        if (!world[X][Y - 1].equals(Tileset.NOTHING) && !world[X][Y - 1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT) {
+
+                            //存入saveTXT
+                            saveTXT.print('s');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+
+
+                            //目标点变成@
+                            world[X][Y - 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y--;
+
+                        }
+                        break;
+
+                    //向左
+                    case 'a':
+                        //是floor && 不超出背景板
+                        if (!world[X - 1][Y].equals(Tileset.NOTHING) && !world[X - 1][Y].equals(Tileset.WALL) && X >= 0 && X < BACK_WIDTH) {
+
+                            //存入saveTXT
+                            saveTXT.print('a');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+
+                            //目标点变成@
+                            world[X - 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X--;
+
+
+                        }
+
+                        break;
+
+                    //向右
+                    case 'd':
+                        //是floor && 不超出背景板
+                        if (!world[X + 1][Y].equals(Tileset.WALL) && !world[X + 1][Y].equals(Tileset.NOTHING) && X >= 0 && X < BACK_WIDTH) {
+
+                            //存入saveTXT
+                            saveTXT.print('d');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+                            //如何区分怪兽？不是floor就是
+                            //如何区分金币？不是floor就是
+
+                            //目标点变成@
+                            world[X + 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X++;
+
+
+
+                        }
+                        break;
+
+                    case ':':
+                        boolean leave = false;
+                        while (!leave) {
+                            //若下一个是q，则保存
+                            if (StdDraw.hasNextKeyTyped()) {
+
+                                char isQ = Character.toLowerCase(StdDraw.nextKeyTyped());
+                                if (isQ == 'q') {
+                                    //触发保存
+
+                                    //保存完后，直接退出整个program
+                                    System.exit(0);
+                                    break;
+                                } else {
+                                    //离开这个while loop
+                                    leave = true;
+
+                                }
+                            }
+                        }
+                        break;
+
+
+                    //若输入其他乱七八糟的，自动忽略
+                    default:
+                        break;
+
+
+                }
+
+            }
+
+
+            // 开始讨论有没有光
+            if (light) {
+                ter.renderFrame(world);
+            } else{
+                ter.partFrame(world, X, Y);
+            }
+
+
+
+            /****************************************************************************************************/
+            //研究鼠标
+
+            //鼠标的X轴
+            int Xmouse = (int) StdDraw.mouseX();
+            //鼠标的Y轴
+            int Ymouse = (int) StdDraw.mouseY();
+
+            //tile默认为外面
+            TETile tile = new TETile('O', RED, WHITE, "Outside the board", 103);
+
+            //确认鼠标在world中吗，因为背景板比world大
+            if (Xmouse >= 0 && Xmouse < world.length && Ymouse < world[0].length && Ymouse >= 0) {
+                tile = world[Xmouse][Ymouse];
+            }
+
+            /****************************************************************************************************/
+
+            StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
+            StdDraw.textLeft(1, BACK_HEIGHT + 2, tile.description());
+
+            //输出开关语句
+            StdDraw.setPenColor(StdDraw.WHITE);
+            if (light) {
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                //Open (current)
+                StdDraw.setPenColor(StdDraw.RED);
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Open (current)");
+
+            } else {
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                //Open (current)
+                StdDraw.setPenColor(StdDraw.RED);
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Close (current)");
+            }
+
+
+            //输了怎么样，等后面有了存 再说
+
+            //Display
+            StdDraw.show();
+
+            StdDraw.pause(30);
+
+
+
+        }
+
+
+    }
+
+
+
+    //吃位移+接着玩
+    public void replay_No_Coins(In eat) {
+
+        //先老样子，创小人，怪兽和血量
+        //生成 玩家的 出生点
+        int X = uniform(RANDOM, 0, BACK_WIDTH);
+        int Y = uniform(RANDOM, 0, BACK_HEIGHT);
+
+
+        //如果不是floor，重新生成
+        while (!world[X][Y].equals(Tileset.FLOOR)) {
+            X = uniform(RANDOM, 0, BACK_WIDTH);
+            Y = uniform(RANDOM, 0, BACK_HEIGHT);
+        }
+
+        //设置用户形状
+        TETile you = new TETile('@', Color.magenta, cyan, "You", 100);
+        world[X][Y] = you;
+
+
+        //开始设置移动
+        //接下来的鼠标之类的 也都会在这里面
+        char direction;
+
+        //计算怪兽的个数
+        int countM = 0;
+
+
+        int step = 0;
+
+
+
+        //输了
+        boolean lose = false;
+
+        //开灯
+        boolean light = true;
+
+
+        System.out.println("Hiiiii!");
+
+        /**********************************************************************************************************************************/
+        //开始吃
+        //eat一进来就是第二行
+        while (eat.hasNextLine()) {
+            //位置也都在一行里
+            String line = eat.readLine();
+
+            //若存在第二行
+            if (line != null) {
+                //分块
+                String[] parts = line.split(",");
+
+                //开始吃所有的有效位置，因为我只保存有效位置
+                for (String to : parts) {
+                    //若不为空
+                    if (!to.equals("")) {
+
+
+                        //开始换位置
+                        if (to.equals("w")) {
+                            step++;
+                            System.out.println("Yes" + step);
+
+                            //目标点变成@
+                            world[X][Y + 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y++;
+                            countM++;
+
+                        } else if (to.equals("s")) {
+                            step++;
+                            System.out.println("Yes" + step);
+
+                            //目标点变成@
+                            world[X][Y - 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y--;
+                            countM++;
+
+                        } else if (to.equals("a")) {
+                            step++;
+                            System.out.println("Yes" + step);
+
+
+                            //目标点变成@
+                            world[X - 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X--;
+
+                            countM++;
+
+                        } else if (to.equals("d")) {
+                            step++;
+                            System.out.println("Yes" + step);
+
+                            //目标点变成@
+                            world[X + 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X++;
+
+                            countM++;
+                        } else if (to.equals("b")) {
+
+                            //开/关
+                            light = !light;
+
+                        }
+
+
+                    }
+
+                }
+            }
+        }
+        //出来后
+
+
+        //目前打算放到后面开始diy部分，不仅会有while true，所以可以 使用 鼠标识别
+        while (true) {
+
+            //移动
+            while (StdDraw.hasNextKeyTyped() && !lose) {
+
+                //读取+小写
+                direction = Character.toLowerCase(StdDraw.nextKeyTyped());
+
+                //每移动一次，更新X,Y+原位置变回floor+新位置是you / 退出
+                switch (direction) {
+
+                    //关灯/开灯
+                    case 'b':
+                        light = !light;
+                        //存入saveTXT
+                        saveTXT.print('b');
+                        saveTXT.print(',');
+                        break;
+
+                    //向上
+                    case 'w':
+                        //不是WALL/NOTHING && 不超出背景板
+                        //但可以是怪物！
+                        if (!world[X][Y + 1].equals(Tileset.NOTHING) && !world[X][Y + 1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT) {
+
+                            //存入saveTXT
+                            saveTXT.print('w');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+
+
+                            //目标点变成@
+                            world[X][Y + 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y++;
+                            countM++;
+
+                        }
+                        break;
+
+                    //向下
+                    case 's':
+                        //是floor && 不超出背景板
+                        if (!world[X][Y - 1].equals(Tileset.NOTHING) && !world[X][Y - 1].equals(Tileset.WALL) && Y >= 0 && Y < BACK_HEIGHT) {
+
+                            //存入saveTXT
+                            saveTXT.print('s');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+
+                            //目标点变成@
+                            world[X][Y - 1] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            Y--;
+                            countM++;
+
+                        }
+                        break;
+
+                    //向左
+                    case 'a':
+                        //是floor && 不超出背景板
+                        if (!world[X - 1][Y].equals(Tileset.NOTHING) && !world[X - 1][Y].equals(Tileset.WALL) && X >= 0 && X < BACK_WIDTH) {
+
+                            //存入saveTXT
+                            saveTXT.print('a');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+
+
+                            //目标点变成@
+                            world[X - 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X--;
+
+                            countM++;
+
+                        }
+
+                        break;
+
+                    //向右
+                    case 'd':
+                        //是floor && 不超出背景板
+                        if (!world[X + 1][Y].equals(Tileset.WALL) && !world[X + 1][Y].equals(Tileset.NOTHING) && X >= 0 && X < BACK_WIDTH) {
+
+                            //存入saveTXT
+                            saveTXT.print('d');
+                            saveTXT.print(',');
+
+                            step++;
+                            System.out.println("Yes" + step);
+
+                            //目标点变成@
+                            world[X + 1][Y] = you;
+                            //原位置变回地板
+                            world[X][Y] = Tileset.FLOOR;
+                            //更新X，Y坐标
+                            X++;
+
+                            countM++;
+
+
+                        }
+                        break;
+
+                    case ':':
+                        boolean leave = false;
+                        while (!leave) {
+                            //若下一个是q，则保存
+                            if (StdDraw.hasNextKeyTyped()) {
+
+                                char isQ = Character.toLowerCase(StdDraw.nextKeyTyped());
+                                if (isQ == 'q') {
+                                    //触发保存
+
+                                    //保存完后，直接退出整个program
+                                    System.exit(0);
+                                    break;
+                                } else {
+                                    //离开这个while loop
+                                    leave = true;
+
+                                }
+                            }
+                        }
+                        break;
+
+
+                    //若输入其他乱七八糟的，自动忽略
+                    default:
+                        break;
+
+                }
+
+            }
+
+
+
+            // 开始讨论有没有光
+            if (light) {
+                ter.renderFrame(world);
+            } else{
+                ter.partFrame(world, X, Y);
+            }
+
+
+            /****************************************************************************************************/
+            //研究鼠标
+
+            //鼠标的X轴
+            int Xmouse = (int) StdDraw.mouseX();
+            //鼠标的Y轴
+            int Ymouse = (int) StdDraw.mouseY();
+
+            //tile默认为外面
+            TETile tile = new TETile('O', RED, WHITE, "Outside the board", 103);
+
+            //确认鼠标在world中吗，因为背景板比world大
+            if (Xmouse >= 0 && Xmouse < world.length && Ymouse < world[0].length && Ymouse >= 0) {
+                tile = world[Xmouse][Ymouse];
+            }
+
+            /****************************************************************************************************/
+
+            StdDraw.setPenColor(StdDraw.PRINCETON_ORANGE);
+            StdDraw.textLeft(1, BACK_HEIGHT + 2, tile.description());
+
+            //输出开关语句
+            StdDraw.setPenColor(StdDraw.WHITE);
+            if (light) {
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                //Open (current)
+                StdDraw.setPenColor(StdDraw.RED);
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Open (current)");
+
+            } else {
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                //Open (current)
+                StdDraw.setPenColor(StdDraw.RED);
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Close (current)");
+            }
+
+            //输了怎么样，等后面有了存 再说
+
+            //Display
+            StdDraw.show();
+            StdDraw.pause(30);
+
 
         }
 

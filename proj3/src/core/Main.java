@@ -3,6 +3,7 @@ package core;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Out;
 import edu.princeton.cs.algs4.StdDraw;
+import org.apache.logging.log4j.core.pattern.AbstractStyleNameConverter;
 import tileengine.TERenderer;
 
 import tileengine.TERenderer;
@@ -30,6 +31,7 @@ public class Main {
 
 
 
+        boolean coinORnot = false;
         boolean secondTime = /*true;*/false;
 
         while (true){
@@ -82,6 +84,9 @@ public class Main {
 
                         //开始一个新的世界
                         case 'n':
+
+                            //加一个说 如果加c就是coin模式
+                            //加其他任意就是普通模式
                             entered = true;
 
                             //创一个test的文件夹
@@ -93,6 +98,8 @@ public class Main {
 
                             //呼叫 输入 seed 的界面
                             long finalSeed = SEEDmenu(saveTXT);
+
+                            coinORnot = Coinmenu(saveTXT);
                             //先创建一个背景板
                             //TERenderer ter = new TERenderer();
                             ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
@@ -101,7 +108,14 @@ public class Main {
                             World x = new World(finalSeed,BACK_HEIGHT,BACK_WIDTH,ter,saveTXT);
 
                             x.createWorld ();
-                            secondTime = x.play();
+                            //若要游玩
+                            if (coinORnot){
+                                secondTime = x.play();
+                            } else{
+                                //无需return
+                                x.play_No_Coins();
+                            }
+
                             break;
 
 
@@ -150,6 +164,22 @@ public class Main {
                             //得 之前的 seed
                             Long oldSeed = Long.parseLong(seedSub);
 
+
+                            //看要不要coin
+                            String yesCoin = getOld.readLine();
+                            String resultCoin = "";
+                            //分块
+                            String[] partsCoin = yesCoin.split(",");
+
+                            for (String z : partsCoin){
+                                //若不为空
+                                if (! z.equals("")){
+                                    resultCoin += z;
+                                }
+
+                            }
+
+
                             //渲染
                             ter.initialize(BACK_WIDTH,BACK_HEIGHT+4);
 
@@ -160,11 +190,11 @@ public class Main {
                             y.createWorld();
 
                             //2. 修改 + 开玩一体式
-                            secondTime = y.replay(getOld);
-
-
-
-
+                            if (resultCoin.trim().equals("c")){
+                                secondTime = y.replay(getOld);
+                            } else {
+                                y.replay_No_Coins(getOld);
+                            }
 
                             break;
                     }
@@ -308,4 +338,103 @@ public class Main {
         }
 
     }
+
+
+
+
+    //进入要不要Coin的版面
+    //输入c/C进入金币，其他：普通
+    public static boolean Coinmenu(Out saveTXT){
+
+        //saveTXT 把用户的seed都存进去
+        //刷新版面
+        StdDraw.clear(BLACK);
+
+        //先考虑 怎么吃seed
+        //开始吃输入
+        boolean getS = false;
+
+        //最后Seed的样子
+        String finalSeed = "";
+        //用户每输入一个数，就加到finalSeed里
+        char c;
+
+
+        //我存文字的想法：一连串数字，每个用空格分开，遇到s，就换行（不添加s）
+        while (true) {
+
+            // hasNextKeyTyped checks if the user has typed a key that we haven't processed.
+            // This loop runs until all unprocessed keys are processed.
+            // If there are no unprocessed keys, we go back to the outer infinite loop to wait for the next key.
+            while (StdDraw.hasNextKeyTyped()) {
+
+                // nextKeyTyped returns the next key to process.
+                // Always check hasNextKeyTyped before calling nextKeyTyped.
+                // If you call nextKeyTyped and there's no key to process, code will crash!
+                c = StdDraw.nextKeyTyped();
+
+                //判断c是不是数字
+                //如果是，更新seed
+                if (Character.toLowerCase(c)=='c'){
+                    saveTXT.print(c);
+                    saveTXT.print(',');
+                    //添加换行
+                    saveTXT.println();
+                    return true;
+                }
+                //如果不是，那就k按是不是S，如果也不是，就当没发生过，吃下一个
+                else{
+                    saveTXT.print(c);
+                    saveTXT.print(',');
+                    //添加换行
+                    saveTXT.println();
+                    return false;
+
+                }
+
+            }
+
+
+            //设置颜色
+            StdDraw.setPenColor(WHITE);
+            //设置第一行的字体+大小
+            Font CS61B = new Font ("default", 0, 55);
+            //使用上述字体
+            StdDraw.setFont(CS61B);
+            //输出文字
+            StdDraw.textLeft(25, 47, "CS61B: BYOW");
+
+            StdDraw.setPenColor(YELLOW);
+            //设置后面几行的字体+大小
+            Font option= new Font ("default", 0, 45);
+            //使用上述字体
+            StdDraw.setFont(option);
+            //输出Prompt文字
+            StdDraw.textLeft(16, 40, "$Collect Coins?$");
+            //[Yes: C (c)]
+            StdDraw.textLeft(16, 37, "[$Yes: C (c)]");
+            StdDraw.textLeft(16, 34, "[$No : Anything Else]");
+
+//            //输出现有seed
+//            //设置新颜色
+//            StdDraw.setPenColor(YELLOW);
+//            if (!finalSeed.equals("")){
+//                StdDraw.textLeft(16, 25, finalSeed);
+//            }
+
+
+            //Display
+            StdDraw.show();
+            //避免闪烁
+            StdDraw.pause(2);
+
+
+
+        }
+
+    }
+
+
+
+
 }
