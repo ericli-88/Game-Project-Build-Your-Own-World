@@ -28,6 +28,7 @@ public class TETile {
     private final String description;
     private final String filepath;
     private final int id;
+    public boolean marked;
 
     /**
      * Full constructor for TETile objects.
@@ -45,6 +46,7 @@ public class TETile {
         this.description = description;
         this.filepath = filepath;
         this.id = id;
+        this.marked = false;
     }
 
     /**
@@ -62,6 +64,7 @@ public class TETile {
         this.description = description;
         this.filepath = null;
         this.id = id;
+        this.marked = false;
     }
 
     /**

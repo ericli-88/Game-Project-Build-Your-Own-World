@@ -27,7 +27,7 @@ public class Main {
     //TERenderer ter;
 
 
-    public static void main(String[] args) {
+    public   static void main(String[] args) {
 
 
 
