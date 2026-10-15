@@ -773,16 +773,16 @@ public class World {
             //输出开关语句
             StdDraw.setPenColor(StdDraw.WHITE);
             if (light) {
-                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Press B / b to toggle line of sight: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Open (current)");
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "ON (current)");
 
             } else {
-                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Press B / b to toggle line of sight: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Close (current)");
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "OFF (current)");
             }
 
 
@@ -1251,16 +1251,16 @@ public class World {
             //输出开关语句
             StdDraw.setPenColor(StdDraw.WHITE);
             if (light) {
-                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Press B / b to toggle line of sight: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Open (current)");
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "ON (current)");
 
             } else {
-                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Press B / b to toggle line of sight: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Close (current)");
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "OFF (current)");
             }
 
             //输了怎么样，等后面有了存 再说
@@ -1499,16 +1499,16 @@ public class World {
             //输出开关语句
             StdDraw.setPenColor(StdDraw.WHITE);
             if (light) {
-                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Press B / b to toggle line of sight: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Open (current)");
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "ON (current)");
 
             } else {
-                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Press B / b to toggle line of sight: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Close (current)");
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "OFF (current)");
             }
 
 
@@ -1838,16 +1838,16 @@ public class World {
             //输出开关语句
             StdDraw.setPenColor(StdDraw.WHITE);
             if (light) {
-                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Press B / b to toggle line of sight: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Open (current)");
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "ON (current)");
 
             } else {
-                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Click B / b to control the light: ");
+                StdDraw.textLeft(15, BACK_HEIGHT + 2, "Press B / b to toggle line of sight: ");
                 //Open (current)
                 StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.textLeft(29, BACK_HEIGHT + 2, "Close (current)");
+                StdDraw.textLeft(29, BACK_HEIGHT + 2, "OFF (current)");
             }
 
             //输了怎么样，等后面有了存 再说

@@ -160,7 +160,18 @@ public class TERenderer {
 
     //创一个菱形的新世界
     public void partFrame(TETile[][] world,int X, int Y){
+        // Keep the source world intact and render a masked copy. Visibility handles bounds,
+        // radius, and wall occlusion in one place, so the toggle cannot corrupt game state.
+        renderFrame(Visibility.visibleRegion(world, X, Y, Visibility.DEFAULT_RADIUS));
+    }
 
+    /*
+     * Legacy implementation retained below for reference while old save files are supported.
+     * The renderer now uses Visibility.visibleRegion above; these helpers are no longer on the
+     * active rendering path.
+     */
+
+    private void legacyPartFrame(TETile[][] world,int X, int Y){
         //设 菱形最长值
         int maximum = 5;
 
