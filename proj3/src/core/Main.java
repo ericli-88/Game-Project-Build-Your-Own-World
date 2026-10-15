@@ -219,11 +219,11 @@ public class Main {
         StdDraw.setPenColor(WHITE);
 
         //设置第一行的字体+大小
-        Font CS61B = new Font ("default", 0, 55);
+        Font titleFont = new Font ("default", 0, 55);
         //使用上述字体
-        StdDraw.setFont(CS61B);
+        StdDraw.setFont(titleFont);
         //输出文字
-        StdDraw.textLeft(25, 47, "CS61B: BYOW");
+        StdDraw.textLeft(25, 47, "BYOW: Coinlight Caverns");
 
         //设置后面几行的字体+大小
         Font option= new Font ("default", 0, 35);
@@ -307,11 +307,11 @@ public class Main {
             //设置颜色
             StdDraw.setPenColor(WHITE);
             //设置第一行的字体+大小
-            Font CS61B = new Font ("default", 0, 55);
+            Font titleFont = new Font ("default", 0, 55);
             //使用上述字体
-            StdDraw.setFont(CS61B);
+            StdDraw.setFont(titleFont);
             //输出文字
-            StdDraw.textLeft(25, 47, "CS61B: BYOW");
+            StdDraw.textLeft(25, 47, "BYOW: Coinlight Caverns");
 
             //设置后面几行的字体+大小
             Font option= new Font ("default", 0, 45);
@@ -398,11 +398,11 @@ public class Main {
             //设置颜色
             StdDraw.setPenColor(WHITE);
             //设置第一行的字体+大小
-            Font CS61B = new Font ("default", 0, 55);
+            Font titleFont = new Font ("default", 0, 55);
             //使用上述字体
-            StdDraw.setFont(CS61B);
+            StdDraw.setFont(titleFont);
             //输出文字
-            StdDraw.textLeft(25, 47, "CS61B: BYOW");
+            StdDraw.textLeft(25, 47, "BYOW: Coinlight Caverns");
 
             StdDraw.setPenColor(YELLOW);
             //设置后面几行的字体+大小

@@ -2,11 +2,10 @@
 
 ![Pixel-art design board](assets/byow-pixel-design.png)
 
-**Byow** is my individual implementation of Berkeley CS 61B's final project, Project 3: Build Your
-Own World. It is a playful pixel dungeon where you generate a deterministic world, wander with WASD,
-switch a wall-blocked line of sight with `B`, and collect every gold coin.
+**Byow** is a solo pixel-game project: generate a deterministic dungeon, wander with WASD, switch a
+wall-blocked line of sight with `B`, and collect every gold coin.
 
-> **Solo project:** designed and implemented independently by me for Berkeley CS 61B's final Project 3.
+> **Solo project:** designed and implemented independently by me.
 
 ## Highlights
 
@@ -21,8 +20,8 @@ switch a wall-blocked line of sight with `B`, and collect every gold coin.
 
 ## Run
 
-Open the `proj3` folder in IntelliJ IDEA with the course's `algs4.jar` dependency configured, then
-run `core.Main`. The source layout follows the CS 61B BYOW starter conventions.
+Open the `proj3` folder in IntelliJ IDEA with the `algs4.jar` dependency configured, then run
+`core.Main`.
 
 ## Project structure
 
@@ -33,5 +32,4 @@ proj3/src/core/                 menus, world generation, gameplay
 proj3/src/tileengine/           tiles, renderer, line-of-sight utility
 ```
 
-This repository is a personal fork of the original CS 61B project and is intended for educational
-use.
+This is a solo project completed by me and is intended for educational use.
