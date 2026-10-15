@@ -1,9 +1,9 @@
 # BYOW — Coinlight Caverns design
 
-`Byow` is a small Java tile game built on the CS 61B BYOW engine. The player explores a randomly
-generated dungeon, toggles a fog-of-war line of sight, and collects every coin before returning to
-the main menu. This is an independent solo project: the design, implementation, and polish were
-completed by me alone.
+`Byow` is my solo implementation of Berkeley CS 61B's final project, Project 3: Build Your Own World.
+It is a small Java tile game in which the player explores a randomly generated dungeon, toggles a
+fog-of-war line of sight, and collects every coin before returning to the main menu. The design,
+implementation, and polish were completed by me alone.
 
 ![Pixel-art design board](../assets/byow-pixel-design.png)
 

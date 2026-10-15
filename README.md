@@ -2,10 +2,11 @@
 
 ![Pixel-art design board](assets/byow-pixel-design.png)
 
-**Byow** is a playful CS 61B Build Your Own World project: generate a deterministic dungeon, wander
-with WASD, switch a wall-blocked line of sight with `B`, and collect every gold coin.
+**Byow** is my individual implementation of Berkeley CS 61B's final project, Project 3: Build Your
+Own World. It is a playful pixel dungeon where you generate a deterministic world, wander with WASD,
+switch a wall-blocked line of sight with `B`, and collect every gold coin.
 
-> **Solo project:** designed and implemented independently by me.
+> **Solo project:** designed and implemented independently by me for Berkeley CS 61B's final Project 3.
 
 ## Highlights
 
