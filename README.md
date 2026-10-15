@@ -5,6 +5,8 @@
 **Byow** is a playful CS 61B Build Your Own World project: generate a deterministic dungeon, wander
 with WASD, switch a wall-blocked line of sight with `B`, and collect every gold coin.
 
+> **Solo project:** designed and implemented independently by me.
+
 ## Highlights
 
 - Primary ambition feature: toggleable line of sight with wall occlusion.

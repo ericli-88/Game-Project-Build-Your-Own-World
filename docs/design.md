@@ -2,7 +2,8 @@
 
 `Byow` is a small Java tile game built on the CS 61B BYOW engine. The player explores a randomly
 generated dungeon, toggles a fog-of-war line of sight, and collects every coin before returning to
-the main menu.
+the main menu. This is an independent solo project: the design, implementation, and polish were
+completed by me alone.
 
 ![Pixel-art design board](../assets/byow-pixel-design.png)
 
